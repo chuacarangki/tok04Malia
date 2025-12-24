@@ -50,7 +50,6 @@
         input, button { touch-action: manipulation; min-height: 44px; }
         input { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255,255,255,0.1); color: white; outline: none; padding: 0 12px; }
         
-        /* Mobile Specific Adjustment */
         @media (max-width: 768px) {
             .section-page { height: calc(100vh - 130px); padding-bottom: 80px; }
             .hide-mobile { display: none; }
@@ -61,7 +60,7 @@
         @media print {
             body * { visibility: hidden; }
             #print-area, #print-area * { visibility: visible; }
-            #print-area { position: absolute; left: 0; top: 0; width: 58mm; color: black; }
+            #print-area { position: absolute; left: 0; top: 0; width: 58mm; color: black; background: white; padding: 5px; }
         }
     </style>
 </head>
@@ -103,7 +102,6 @@
     </header>
 
     <main id="main-container" class="flex-grow overflow-hidden relative">
-        
         <div id="sec-kasir" class="section-page h-full flex flex-col lg:flex-row">
             <div class="flex-grow flex flex-col p-3 overflow-hidden">
                 <div class="relative mb-3">
@@ -114,7 +112,7 @@
                 <div class="glass-card rounded-2xl flex-grow flex flex-col overflow-hidden">
                     <div class="overflow-y-auto flex-grow custom-scroll">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-900/80 sticky top-0 text-[10px] font-bold uppercase text-slate-500">
+                            <thead class="bg-slate-900/80 sticky top-0 text-[10px] font-bold uppercase text-slate-500 z-10">
                                 <tr>
                                     <th class="p-3">Item</th>
                                     <th class="p-3 text-center">Qty</th>
@@ -270,7 +268,6 @@
     </div>
 
     <script>
-        // FIREBASE & LOGIC TETAP SAMA NAMUN DENGAN PENYESUAIAN RENDER UNTUK MOBILE
         const config = {
             apiKey: "AIzaSyBhrN6vuBzuxwFgPI-iXJky6ErDz8auclY",
             authDomain: "toko4malia.firebaseapp.com",
@@ -343,242 +340,275 @@
 
         function showSection(id) {
             document.querySelectorAll('.section-page').forEach(s => s.classList.add('hidden'));
-            document.getElementById('sec-' + id).classList.remove('hidden');
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            const b = document.getElementById('nav-' + id);
-            if(b) b.classList.add('active');
+            document.getElementById('sec-' + id).classList.remove('hidden');
+            document.getElementById('nav-' + id).classList.add('active');
         }
 
-        function searchBarang(val) {
-            const list = document.getElementById('dropdownSearch');
-            if(!val) return list.classList.add('hidden');
-            const res = dataBarang.filter(b => b.nama.toLowerCase().includes(val.toLowerCase()));
-            list.innerHTML = res.map(b => `
-                <div onclick="addToCart('${b.id}')" class="p-3 border-b border-white/5 cursor-pointer hover:bg-white/10 flex justify-between items-center">
+        // --- LOGIC KASIR ---
+        function searchBarang(q) {
+            const drop = document.getElementById('dropdownSearch');
+            if(!q) { drop.classList.add('hidden'); return; }
+            const filtered = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
+            
+            drop.innerHTML = filtered.map(b => `
+                <div onclick="addToCart('${b.id}')" class="p-4 border-b border-white/5 flex justify-between items-center active:bg-blue-600">
                     <div>
-                        <p class="font-black text-white uppercase text-[10px]">${b.nama}</p>
-                        <span class="badge-stok ${b.stok < 5 ? 'badge-stok-low' : ''}">STOK: ${b.stok}</span>
+                        <p class="text-xs font-bold uppercase">${b.nama}</p>
+                        <p class="text-[10px] text-blue-400 font-mono-price">Rp ${formatIDR(b.ecer)}</p>
                     </div>
-                    <p class="font-mono-price text-blue-400 font-black text-xs">Rp${formatIDR(b.harga)}</p>
+                    <span class="badge-stok ${b.stok < 5 ? 'badge-stok-low' : ''}">${b.stok}</span>
                 </div>
             `).join('');
-            list.classList.toggle('hidden', res.length === 0);
+            drop.classList.remove('hidden');
         }
 
         function addToCart(id) {
-            const b = dataBarang.find(x => x.id === id);
-            if(b.stok <= 0) return toast("Stok Habis!", "red");
-            const ex = keranjang.find(k => k.id === id && k.unit === 'PCS');
-            if(ex) { ex.qty++; ex.sub = ex.qty * ex.harga; }
-            else { keranjang.push({...b, qty:1, unit:'PCS', sub:b.harga}); }
-            renderCart(); 
+            const item = dataBarang.find(b => b.id === id);
+            const inCart = keranjang.find(k => k.id === id);
+            
+            if(inCart) {
+                if(inCart.qty >= item.stok) return toast("Stok Habis!", "red");
+                inCart.qty++;
+            } else {
+                if(item.stok <= 0) return toast("Stok Kosong!", "red");
+                keranjang.push({ ...item, qty: 1 });
+            }
+            
+            document.getElementById('inCari').value = '';
             document.getElementById('dropdownSearch').classList.add('hidden');
-            document.getElementById('inCari').value = "";
+            renderCart();
         }
 
         function renderCart() {
-            let subtotalSemua = 0;
-            document.getElementById('tabelKasir').innerHTML = keranjang.map((i, idx) => {
-                subtotalSemua += i.sub;
-                return `<tr>
-                    <td class="p-3">
-                        <p class="font-black text-white uppercase text-[10px] leading-tight">${i.nama}</p>
-                        <p class="text-[8px] text-blue-400">@${formatIDR(i.unit==='BOX'?i.hargaBox:i.harga)}</p>
-                    </td>
-                    <td class="p-3 text-center">
-                        <div class="flex flex-col items-center gap-1">
-                            <input type="number" value="${i.qty}" onchange="updQty(${idx}, this.value)" class="w-10 bg-slate-900 rounded p-1 text-center font-bold text-yellow-400 text-[10px] min-h-0 h-7">
-                            <button onclick="toggleUnit(${idx})" class="text-[7px] font-black px-2 py-1 rounded ${i.unit==='BOX'?'bg-orange-600':'bg-blue-600'} text-white h-auto min-h-0">${i.unit}</button>
-                        </div>
-                    </td>
-                    <td class="p-3 text-right font-mono-price text-white font-bold text-[10px]">Rp${formatIDR(i.sub)}</td>
-                    <td class="p-3 text-center"><button onclick="keranjang.splice(${idx},1);renderCart()" class="text-red-500">✕</button></td>
-                </tr>`;
+            const tbody = document.getElementById('tabelKasir');
+            let total = 0;
+            tbody.innerHTML = keranjang.map((k, i) => {
+                const sub = k.qty * k.ecer;
+                total += sub;
+                return `
+                    <tr>
+                        <td class="p-3">
+                            <p class="font-bold uppercase leading-tight">${k.nama}</p>
+                            <p class="text-[9px] text-slate-400">@${formatIDR(k.ecer)}</p>
+                        </td>
+                        <td class="p-3">
+                            <div class="flex items-center justify-center gap-2">
+                                <button onclick="updateQty(${i}, -1)" class="w-6 h-6 bg-white/5 rounded">-</button>
+                                <span class="font-bold text-xs w-4 text-center">${k.qty}</span>
+                                <button onclick="updateQty(${i}, 1)" class="w-6 h-6 bg-white/5 rounded">+</button>
+                            </div>
+                        </td>
+                        <td class="p-3 text-right font-mono-price text-xs">Rp ${formatIDR(sub)}</td>
+                        <td class="p-3 text-right"><button onclick="keranjang.splice(${i},1);renderCart()" class="text-red-500">✕</button></td>
+                    </tr>
+                `;
             }).join('');
+
             const diskon = toNum(document.getElementById('diskonManual').value);
-            document.getElementById('totalBelanja').innerText = "Rp " + formatIDR(Math.max(0, subtotalSemua - diskon));
+            const grandTotal = total - diskon;
+            document.getElementById('totalBelanja').innerText = `Rp ${formatIDR(grandTotal)}`;
             hitungKembali();
         }
 
-        function updQty(idx, v) { 
-            keranjang[idx].qty = Math.max(1, parseInt(v)||1); 
-            keranjang[idx].sub = (keranjang[idx].unit==='BOX'?keranjang[idx].hargaBox:keranjang[idx].harga) * keranjang[idx].qty;
-            renderCart(); 
-        }
-
-        function toggleUnit(idx) {
-            keranjang[idx].unit = keranjang[idx].unit==='PCS'?'BOX':'PCS';
-            keranjang[idx].sub = (keranjang[idx].unit==='BOX'?keranjang[idx].hargaBox:keranjang[idx].harga) * keranjang[idx].qty;
+        function updateQty(idx, n) {
+            const item = keranjang[idx];
+            const original = dataBarang.find(b => b.id === item.id);
+            if(n > 0 && item.qty >= original.stok) return toast("Maks stok!", "red");
+            item.qty += n;
+            if(item.qty <= 0) keranjang.splice(idx, 1);
             renderCart();
         }
 
         function hitungKembali() {
-            const t = toNum(document.getElementById('totalBelanja').innerText);
-            const b = toNum(document.getElementById('bayarTunai').value);
-            document.getElementById('kembalianText').innerText = "Rp " + formatIDR(Math.max(0, b - t));
+            const total = toNum(document.getElementById('totalBelanja').innerText);
+            const bayar = toNum(document.getElementById('bayarTunai').value);
+            const kembalian = bayar - total;
+            document.getElementById('kembalianText').innerText = `Rp ${formatIDR(Math.max(0, kembalian))}`;
         }
 
         async function prosesBayar() {
-            const t = toNum(document.getElementById('totalBelanja').innerText);
-            const b = toNum(document.getElementById('bayarTunai').value);
-            const diskon = toNum(document.getElementById('diskonManual').value);
-            if(keranjang.length === 0) return toast("Keranjang Kosong!", "red");
-            if(b < t) return toast("Tunai Kurang!", "red");
+            const total = toNum(document.getElementById('totalBelanja').innerText);
+            const bayar = toNum(document.getElementById('bayarTunai').value);
+            if(total <= 0) return toast("Keranjang Kosong!", "red");
+            if(bayar < total) return toast("Uang Kurang!", "red");
+
             try {
-                const docRef = await db.collection("transaksi").add({
-                    kasir: userAktif, total: t, bayar: b, kembali: b-t, diskon: diskon,
-                    waktu: firebase.firestore.FieldValue.serverTimestamp(),
-                    items: keranjang.map(i => ({nama:i.nama, qty:i.qty, sub:i.sub, unit:i.unit, hrg:i.unit==='BOX'?i.hargaBox:i.harga}))
+                const batch = db.batch();
+                const trxRef = db.collection('transaksi').doc();
+                const diskon = toNum(document.getElementById('diskonManual').value);
+                
+                const dataTrx = {
+                    waktu: new Date().getTime(),
+                    items: keranjang,
+                    total: total,
+                    diskon: diskon,
+                    bayar: bayar,
+                    kasir: userAktif,
+                    idTrx: 'TRX-' + Date.now().toString().slice(-6)
+                };
+
+                batch.set(trxRef, dataTrx);
+                
+                keranjang.forEach(k => {
+                    const ref = db.collection('barang').doc(k.id);
+                    batch.update(ref, { stok: firebase.firestore.FieldValue.increment(-k.qty) });
                 });
-                lastTransactionId = docRef.id;
-                for(let i of keranjang) {
-                    const dec = i.unit === 'BOX' ? i.qty * 12 : i.qty;
-                    const ref = db.collection("barang").doc(i.id);
-                    await db.runTransaction(async (transaction) => {
-                        const d = await transaction.get(ref);
-                        transaction.update(ref, {stok: d.data().stok - dec});
-                    });
-                }
+
+                await batch.commit();
+                lastTransactionId = trxRef.id;
                 document.getElementById('modal-print-confirm').classList.replace('hidden', 'flex');
-            } catch(e) { toast("ERROR", "red"); }
+                
+                // Reset
+                keranjang = [];
+                document.getElementById('bayarTunai').value = '';
+                document.getElementById('diskonManual').value = '';
+                renderCart();
+            } catch(e) { toast("Error: " + e.message, "red"); }
         }
 
-        function handlePrintDecision(shouldPrint) {
+        function handlePrintDecision(yes) {
             document.getElementById('modal-print-confirm').classList.replace('flex', 'hidden');
-            if(shouldPrint && lastTransactionId) printStruk(lastTransactionId);
-            toast("BERHASIL!", "blue");
-            resetKasir();
+            if(yes) cetakStruk(lastTransactionId);
         }
 
-        function resetKasir() {
-            keranjang=[]; 
-            document.getElementById('bayarTunai').value=""; 
-            document.getElementById('diskonManual').value=""; 
-            renderCart();
-        }
-
-        function printStruk(id) {
-            const t = dataTransaksi.find(x => x.id === id);
-            if(!t) return;
-            const printArea = document.getElementById('print-area');
-            const d = t.waktu?.toDate() || new Date();
-            const dateStr = d.toLocaleDateString('id-ID') + ' ' + d.toLocaleTimeString('id-ID');
-            printArea.innerHTML = `
-                <div style="text-align:center; border-bottom:1px dashed #000; padding-bottom:5px; margin-bottom:5px;">
-                    <b style="font-size:14px">AMALIA STORE</b><br>POS System
+        function cetakStruk(id) {
+            const trx = dataTransaksi.find(t => t.id === id);
+            if(!trx) return;
+            const area = document.getElementById('print-area');
+            area.innerHTML = `
+                <div style="text-align:center; margin-bottom:10px;">
+                    <h2 style="font-size:14px; margin:0">AMALIA STORE</h2>
+                    <p style="margin:0">Ds. Kebonsari, Kec. Amalia</p>
                 </div>
-                <div style="margin-bottom:5px">Kasir: ${t.kasir}<br>${dateStr}</div>
-                <table style="width:100%; border-bottom:1px dashed #000; margin-bottom:5px;">
-                    ${t.items.map(i => `<tr><td>${i.nama}<br>${i.qty} ${i.unit} x ${formatIDR(i.hrg)}</td><td style="text-align:right; vertical-align:bottom">${formatIDR(i.sub)}</td></tr>`).join('')}
-                </table>
-                <table style="width:100%">
-                    ${t.diskon ? `<tr><td>Diskon</td><td style="text-align:right">-${formatIDR(t.diskon)}</td></tr>` : ''}
-                    <tr><td><b>TOTAL</b></td><td style="text-align:right"><b>${formatIDR(t.total)}</b></td></tr>
-                    <tr><td>Tunai</td><td style="text-align:right">${formatIDR(t.bayar)}</td></tr>
-                    <tr><td>Kembali</td><td style="text-align:right">${formatIDR(t.kembali)}</td></tr>
-                </table>
-                <div style="text-align:center; margin-top:10px; border-top:1px dashed #000; padding-top:5px;">Terima Kasih</div>
+                <div style="border-bottom:1px dashed black; margin-bottom:5px"></div>
+                <p>ID: ${trx.idTrx}</p>
+                <p>KASIR: ${trx.kasir}</p>
+                <div style="border-bottom:1px dashed black; margin-bottom:5px"></div>
+                ${trx.items.map(i => `
+                    <div style="display:flex; justify-content:space-between">
+                        <span>${i.nama} x${i.qty}</span>
+                        <span>${formatIDR(i.qty * i.ecer)}</span>
+                    </div>
+                `).join('')}
+                <div style="border-bottom:1px dashed black; margin:5px 0"></div>
+                <div style="display:flex; justify-content:space-between; font-weight:bold">
+                    <span>TOTAL</span><span>Rp ${formatIDR(trx.total)}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span>BAYAR</span><span>Rp ${formatIDR(trx.bayar)}</span>
+                </div>
+                <div style="display:flex; justify-content:space-between">
+                    <span>KEMBALI</span><span>Rp ${formatIDR(trx.bayar - trx.total)}</span>
+                </div>
+                <div style="text-align:center; margin-top:10px">Terima Kasih</div>
             `;
             window.print();
         }
 
-        function renderAdminTable(f = '') {
-            const res = dataBarang.filter(b => b.nama.toLowerCase().includes(f.toLowerCase()));
-            document.getElementById('tabelAdmin').innerHTML = res.map(b => `
-                <tr class="hover:bg-white/[0.02]">
-                    <td class="p-3">
-                        <p class="font-black text-white uppercase">${b.nama}</p>
-                    </td>
-                    <td class="p-3 font-mono-price text-blue-400">Rp${formatIDR(b.harga)}</td>
-                    <td class="p-3"><span class="badge-stok ${b.stok < 10 ? 'badge-stok-low' : ''}">${b.stok}</span></td>
-                    <td class="p-3 text-right">
-                        <button onclick="openEdit('${b.id}')" class="text-blue-500 mr-2">✎</button>
-                        <button onclick="deleteBarang('${b.id}')" class="text-red-500">🗑</button>
-                    </td>
-                </tr>
+        // --- LOGIC HISTORY & LAPORAN ---
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = dataTransaksi.map(t => `
+                <div class="glass-card p-4 rounded-xl flex justify-between items-center">
+                    <div>
+                        <p class="text-[10px] font-black text-blue-400">${t.idTrx}</p>
+                        <p class="text-[9px] text-slate-400">${new Date(t.waktu).toLocaleTimeString()}</p>
+                    </div>
+                    <p class="text-xs font-black font-mono-price">Rp ${formatIDR(t.total)}</p>
+                    <button onclick="cetakStruk('${t.id}')" class="text-lg">🖨️</button>
+                </div>
             `).join('');
         }
 
-        async function simpanBarang() {
-            const d = { 
-                nama: document.getElementById('admNama').value.toUpperCase(),
-                harga: toNum(document.getElementById('admEcer').value),
-                hargaBox: toNum(document.getElementById('admGrosir').value),
-                stok: parseInt(document.getElementById('admStok').value) || 0
-            };
-            if(!d.nama || !d.harga) return toast("Lengkapi!", "red");
-            await db.collection("barang").add(d);
-            document.querySelectorAll('#admForm input').forEach(i => i.value="");
-            toast("TERSIPMAN!", "blue");
-        }
-
-        function openEdit(id) {
-            editingId = id; const b = dataBarang.find(x => x.id === id);
-            document.getElementById('editNama').value = b.nama;
-            document.getElementById('editEcer').value = formatIDR(b.harga);
-            document.getElementById('editGrosir').value = formatIDR(b.hargaBox);
-            document.getElementById('editStok').value = b.stok;
-            document.getElementById('modal-edit').classList.replace('hidden', 'flex');
-        }
-
-        async function updateBarang() {
-            await db.collection("barang").doc(editingId).update({
-                nama: document.getElementById('editNama').value.toUpperCase(),
-                harga: toNum(document.getElementById('editEcer').value),
-                hargaBox: toNum(document.getElementById('editGrosir').value),
-                stok: parseInt(document.getElementById('editStok').value) || 0
-            });
-            closeEditModal(); toast("DIUPDATE!", "blue");
-        }
-
-        function closeEditModal() { document.getElementById('modal-edit').classList.replace('flex', 'hidden'); }
-        async function deleteBarang(id) { if(confirm('Hapus?')) await db.collection("barang").doc(id).delete(); }
-
-        function renderHistory() {
-            document.getElementById('history-list').innerHTML = dataTransaksi.map(t => {
-                const d = t.waktu?.toDate();
-                const fD = d ? d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' }) : '-';
-                const fT = d ? d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '-';
-                return `
-                <div class="glass-card p-4 rounded-2xl relative overflow-hidden">
-                    <div class="flex justify-between items-start border-b border-white/5 pb-2 mb-2">
-                        <div>
-                            <p class="text-[7px] text-blue-400 font-bold uppercase">Kasir: ${t.kasir}</p>
-                            <h3 class="text-[10px] font-black text-white italic">${fD} - ${fT}</h3>
-                        </div>
-                        <button onclick="printStruk('${t.id}')" class="bg-blue-600/20 text-blue-400 px-2 py-1 rounded text-[8px] font-black">CETAK</button>
-                    </div>
-                    <div class="flex justify-between items-center">
-                        <div class="text-[9px] text-white/60">
-                            ${t.items.length} Item • ${t.items[0].nama.substring(0,10)}..
-                        </div>
-                        <div class="text-right">
-                            <h2 class="text-xs font-black font-mono-price text-white">Rp${formatIDR(t.total)}</h2>
-                        </div>
-                    </div>
-                </div>`;
-            }).join('');
-        }
-
         function updateLaporan() {
-            const total = dataTransaksi.reduce((a, b) => a + (b.total || 0), 0);
-            document.getElementById('omzet-all').innerText = "Rp " + formatIDR(total);
+            const totalOmzet = dataTransaksi.reduce((a, b) => a + b.total, 0);
+            document.getElementById('omzet-all').innerText = `Rp ${formatIDR(totalOmzet)}`;
             document.getElementById('all-count-total').innerText = dataTransaksi.length;
             filterLaporan();
         }
 
         function filterLaporan() {
-            const d = document.getElementById('pick-day').value;
-            const m = document.getElementById('pick-month').value;
-            let f = dataTransaksi;
-            if(d) f = dataTransaksi.filter(t => t.waktu?.toDate().toISOString().split('T')[0] === d);
-            else if(m) f = dataTransaksi.filter(t => t.waktu?.toDate().toISOString().slice(0,7) === m);
-            const total = f.reduce((a,b) => a + (b.total||0), 0);
-            document.getElementById('lap-omzet').innerText = "Rp " + formatIDR(total);
-            document.getElementById('lap-count').innerText = f.length;
+            const day = document.getElementById('pick-day').value;
+            const month = document.getElementById('pick-month').value;
+            let filtered = dataTransaksi;
+
+            if(day) filtered = filtered.filter(t => new Date(t.waktu).toISOString().split('T')[0] === day);
+            else if(month) filtered = filtered.filter(t => new Date(t.waktu).toISOString().slice(0, 7) === month);
+
+            const total = filtered.reduce((a, b) => a + b.total, 0);
+            document.getElementById('lap-count').innerText = filtered.length;
+            document.getElementById('lap-omzet').innerText = `Rp ${formatIDR(total)}`;
         }
 
-        window.addEventListener('keydown', (e) => { if(e.key === 'F8') document.getElementById('bayarTunai').focus(); });
+        // --- LOGIC ADMIN ---
+        async function simpanBarang() {
+            const nama = document.getElementById('admNama').value;
+            const ecer = toNum(document.getElementById('admEcer').value);
+            const grosir = toNum(document.getElementById('admGrosir').value);
+            const stok = parseInt(document.getElementById('admStok').value);
+
+            if(!nama || !ecer) return toast("Nama/Harga wajib!", "red");
+
+            try {
+                await db.collection('barang').add({
+                    nama: nama.toUpperCase(),
+                    ecer, grosir, stok: stok || 0
+                });
+                toast("Barang Disimpan!");
+                document.getElementById('admNama').value = '';
+                document.getElementById('admEcer').value = '';
+                document.getElementById('admGrosir').value = '';
+                document.getElementById('admStok').value = '';
+            } catch(e) { toast("Error", "red"); }
+        }
+
+        function renderAdminTable(q = '') {
+            const tbody = document.getElementById('tabelAdmin');
+            const filtered = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
+            tbody.innerHTML = filtered.map(b => `
+                <tr class="active:bg-white/5">
+                    <td class="p-3 font-bold uppercase">${b.nama}</td>
+                    <td class="p-3 font-mono-price">Rp ${formatIDR(b.ecer)}</td>
+                    <td class="p-3 font-bold">${b.stok}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="openEdit('${b.id}')" class="text-blue-400 mr-2">✎</button>
+                        <button onclick="hapusBarang('${b.id}')" class="text-red-500">✕</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openEdit(id) {
+            const b = dataBarang.find(x => x.id === id);
+            editingId = id;
+            document.getElementById('editNama').value = b.nama;
+            document.getElementById('editEcer').value = formatIDR(b.ecer);
+            document.getElementById('editGrosir').value = formatIDR(b.grosir);
+            document.getElementById('editStok').value = b.stok;
+            document.getElementById('modal-edit').classList.replace('hidden', 'flex');
+        }
+
+        async function updateBarang() {
+            const data = {
+                nama: document.getElementById('editNama').value.toUpperCase(),
+                ecer: toNum(document.getElementById('editEcer').value),
+                grosir: toNum(document.getElementById('editGrosir').value),
+                stok: parseInt(document.getElementById('editStok').value)
+            };
+            await db.collection('barang').doc(editingId).update(data);
+            closeEditModal();
+            toast("Data Diupdate");
+        }
+
+        function closeEditModal() { document.getElementById('modal-edit').classList.replace('flex', 'hidden'); }
+
+        async function hapusBarang(id) {
+            if(confirm("Hapus barang ini?")) {
+                await db.collection('barang').doc(id).delete();
+                toast("Dihapus");
+            }
+        }
     </script>
 </body>
 </html>
