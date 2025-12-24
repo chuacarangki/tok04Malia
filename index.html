@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Kasir - TOKO AMALIA</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #27ae60;
+            --blue: #007bff;
+            --red: #dc3545;
+            --gray: #f8f9fa;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #e9ecef;
+            margin: 0;
+            padding: 0;
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* --- LOGIN STYLES --- */
+        #login-page {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .login-tabs {
+            display: flex;
+            margin-bottom: 25px;
+            background: #eee;
+            border-radius: 10px;
+            padding: 5px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .tab.active {
+            background: white;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            color: var(--blue);
+        }
+
+        .login-form { display: none; }
+        .login-form.active { display: block; }
+
+        .login-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            box-sizing: border-box;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* --- MAIN APP STYLES (Hidden initially) --- */
+        #app-container {
+            display: none;
+            width: 100%;
+            max-width: 1100px;
+            padding: 20px;
+        }
+
+        .main-wrapper {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 25px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        header {
+            grid-column: span 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+        }
+
+        header h1 { margin: 0; font-size: 1.5rem; color: var(--primary); }
+        .user-badge { font-weight: 600; color: var(--accent); }
+
+        /* Input & Table Styles */
+        .input-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 0.5fr auto;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+        th { text-align: left; padding: 15px; color: #888; font-size: 0.8rem; }
+        td { padding: 15px; background: #fdfdfd; border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; }
+        
+        /* Tooltip & Button logic */
+        .btn {
+            position: relative;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 125%; left: 50%;
+            transform: translateX(-50%);
+            background: #333; color: white;
+            padding: 5px 10px; border-radius: 5px;
+            font-size: 0.7rem; opacity: 0; visibility: hidden;
+        }
+        .btn:hover::after { opacity: 1; visibility: visible; }
+
+        .btn-add { background: var(--accent); color: white; }
+        .btn-print { background: var(--blue); color: white; width: 100%; }
+        .btn-logout { background: #eee; color: #666; font-size: 0.8rem; }
+
+        @media print {
+            #login-page, .input-grid, .btn, .btn-logout, .delete-icon { display: none !important; }
+            body { background: white; }
+            #app-container { display: block; padding: 0; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-page">
+        <h2 style="margin-bottom: 5px;">TOKO AMALIA</h2>
+        <p style="color: #888; margin-bottom: 25px;">Silakan Login</p>
+        
+        <div class="login-tabs">
+            <div id="tab-kasir" class="tab active" onclick="switchTab('kasir')">Kasir</div>
+            <div id="tab-admin" class="tab" onclick="switchTab('admin')">Admin</div>
+        </div>
+
+        <div id="form-kasir" class="login-form active">
+            <input type="text" id="namaKasir" class="login-input" placeholder="Masukkan Nama Anda">
+            <button class="btn-login" onclick="loginKasir()">Masuk Sebagai Kasir</button>
+        </div>
+
+        <div id="form-admin" class="login-form">
+            <input type="password" id="passAdmin" class="login-input" placeholder="Password Admin">
+            <button class="btn-login" style="background: var(--blue);" onclick="loginAdmin()">Masuk Sebagai Admin</button>
+            <p style="font-size: 0.7rem; color: #ccc; margin-top: 10px;">Hint: admin123</p>
+        </div>
+    </div>
+
+    <div id="app-container">
+        <header>
+            <h1>TOKO AMALIA</h1>
+            <div>
+                <span class="user-badge" id="displayUser">User: -</span>
+                <button class="btn btn-logout" style="margin-left: 15px;" onclick="location.reload()">Logout</button>
+            </div>
+        </header>
+
+        <div class="main-wrapper">
+            <div class="card">
+                <div class="input-grid">
+                    <div>
+                        <label style="font-size: 0.7rem;">Nama Barang</label>
+                        <input type="text" id="namaBarang" class="login-input" placeholder="Barang...">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.7rem;">Harga</label>
+                        <input type="number" id="hargaBarang" class="login-input" placeholder="0">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.7rem;">Qty</label>
+                        <input type="number" id="jumlahBarang" class="login-input" value="1">
+                    </div>
+                    <button class="btn btn-add" data-tooltip="Klik untuk menambah ke daftar" onclick="tambahBarang()" style="margin-top: 25px;">
+                        TAMBAH
+                    </button>
+                </div>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Barang</th>
+                            <th>Harga</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="listBarang"></tbody>
+                </table>
+            </div>
+
+            <div class="card">
+                <div style="color: #888; font-size: 0.8rem;">TOTAL TAGIHAN</div>
+                <div id="totalHarga" style="font-size: 2.5rem; font-weight: 800; margin-bottom: 30px;">Rp 0</div>
+                
+                <div style="border-top: 1px dashed #ccc; padding-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <span>Bayar:</span>
+                        <input type="number" id="inputBayar" oninput="hitungKembalian()" style="width: 150px; padding: 8px; border-radius: 5px; border: 1px solid #ddd;">
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 25px;">
+                        <span>Kembali:</span>
+                        <span id="totalKembalian" style="font-weight: bold; color: var(--accent);">Rp 0</span>
+                    </div>
+                    
+                    <button class="btn btn-print" data-tooltip="Cetak struk belanja" onclick="window.print()">CETAK STRUK</button>
+                    <button class="btn" style="width: 100%; margin-top: 10px; background: #95a5a6; color: white;" onclick="resetTransaksi()">TRANSAKSI BARU</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // LOGIC LOGIN
+        function switchTab(type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.login-form').forEach(f => f.classList.remove('active'));
+            
+            document.getElementById('tab-' + type).classList.add('active');
+            document.getElementById('form-' + type).classList.add('active');
+        }
+
+        function loginKasir() {
+            const nama = document.getElementById('namaKasir').value;
+            if(nama.trim() === "") return alert("Masukkan nama kasir!");
+            showApp("Kasir: " + nama);
+        }
+
+        function loginAdmin() {
+            const pass = document.getElementById('passAdmin').value;
+            if(pass === "admin123") {
+                showApp("Administrator");
+            } else {
+                alert("Password Admin Salah!");
+            }
+        }
+
+        function showApp(user) {
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('app-container').style.display = 'block';
+            document.getElementById('displayUser').innerText = user;
+            document.body.style.alignItems = 'flex-start';
+            document.body.style.paddingTop = '40px';
+        }
+
+        // LOGIC KASIR
+        let keranjang = [];
+        let totalGlobal = 0;
+
+        function formatRupiah(angka) {
+            return "Rp " + Math.floor(angka).toLocaleString('id-ID');
+        }
+
+        function tambahBarang() {
+            const nama = document.getElementById('namaBarang').value;
+            const harga = parseFloat(document.getElementById('hargaBarang').value);
+            const qty = parseInt(document.getElementById('jumlahBarang').value);
+
+            if (!nama || isNaN(harga)) return alert("Data tidak lengkap!");
+
+            keranjang.push({ id: Date.now(), nama, harga, qty, subtotal: harga * qty });
+            perbaruiTabel();
+            
+            document.getElementById('namaBarang').value = "";
+            document.getElementById('hargaBarang').value = "";
+            document.getElementById('jumlahBarang').value = "1";
+            document.getElementById('namaBarang').focus();
+        }
+
+        function perbaruiTabel() {
+            const tbody = document.getElementById('listBarang');
+            tbody.innerHTML = "";
+            totalGlobal = 0;
+
+            keranjang.forEach(item => {
+                totalGlobal += item.subtotal;
+                tbody.innerHTML += `
+                    <tr>
+                        <td><strong>${item.nama}</strong></td>
+                        <td>${formatRupiah(item.harga)}</td>
+                        <td>${item.qty}</td>
+                        <td>${formatRupiah(item.subtotal)}</td>
+                        <td style="text-align:right"><span style="color:red; cursor:pointer;" onclick="hapusBarang(${item.id})">✕</span></td>
+                    </tr>
+                `;
+            });
+            document.getElementById('totalHarga').innerText = formatRupiah(totalGlobal);
+            hitungKembalian();
+        }
+
+        function hapusBarang(id) {
+            keranjang = keranjang.filter(i => i.id !== id);
+            perbaruiTabel();
+        }
+
+        function hitungKembalian() {
+            const bayar = parseFloat(document.getElementById('inputBayar').value) || 0;
+            const kembalian = bayar - totalGlobal;
+            document.getElementById('totalKembalian').innerText = formatRupiah(kembalian < 0 ? 0 : kembalian);
+        }
+
+        function resetTransaksi() {
+            if(confirm("Reset transaksi?")) {
+                keranjang = [];
+                document.getElementById('inputBayar').value = "";
+                perbaruiTabel();
+            }
+        }
+    </script>
+</body>
+</html>
