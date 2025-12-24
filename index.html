@@ -42,7 +42,6 @@
 
         input, button { touch-action: manipulation; min-height: 48px; }
         input { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); color: white; outline: none; padding: 0 16px; }
-        input:focus { border-color: #3b82f6; box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2); }
         
         @media (max-width: 768px) {
             .section-page { height: calc(100vh - 64px); padding-bottom: 20px; }
@@ -139,7 +138,7 @@
                     <span class="text-[10px] text-slate-500 font-bold uppercase">Kembalian</span>
                     <span id="kembalianText" class="text-lg font-black text-green-400 font-mono-price">Rp 0</span>
                 </div>
-                <button onclick="prosesBayar()" class="w-full bg-blue-600 h-16 rounded-2xl font-black text-lg uppercase shadow-xl active:scale-95 transition-transform">Proses Bayar</button>
+                <button onclick="prosesBayar()" class="w-full bg-blue-600 h-16 rounded-2xl font-black text-lg uppercase shadow-xl">Proses Bayar</button>
             </div>
         </div>
 
@@ -248,7 +247,13 @@
         let dataBarang = [], dataTransaksi = [], keranjang = [], userAktif = '', userRole = '', editingId = null, lastTransactionId = null;
 
         const formatIDR = (n) => new Intl.NumberFormat('id-ID').format(n || 0);
-        const toNum = (s) => parseInt(s?.toString().replace(/[^0-9]/g, '')) || 0;
+        
+        // Perbaikan Fungsi toNum: Menghapus semua karakter non-angka termasuk titik pemisah ribuan
+        const toNum = (val) => {
+            if (!val) return 0;
+            const str = val.toString().replace(/\./g, '').replace(/[^0-9]/g, '');
+            return parseInt(str) || 0;
+        };
 
         function formatMoneyInput(el) {
             let v = toNum(el.value);
@@ -440,12 +445,10 @@
             area.innerHTML = `
                 <div style="text-align:center; padding:10px 0;">
                     <h2 style="font-size:16px; margin:0">AMALIA STORE</h2>
-                    <p style="margin:0; font-size:10px;">Ds. Kebonsari, Madiun</p>
                 </div>
                 <div style="border-bottom:1px dashed black;"></div>
                 <div style="font-size:10px; padding:5px 0;">
                     <p>TRX: ${trx.idTrx}</p>
-                    <p>TGL: ${new Date(trx.waktu).toLocaleString()}</p>
                     <p>KSR: ${trx.kasir}</p>
                 </div>
                 <div style="border-bottom:1px dashed black;"></div>
@@ -463,7 +466,6 @@
                     <div style="display:flex; justify-content:space-between;"><span>TUNAI</span><span>Rp ${formatIDR(trx.bayar)}</span></div>
                     <div style="display:flex; justify-content:space-between; font-weight:bold;"><span>KEMBALI</span><span>Rp ${formatIDR(trx.bayar - trx.total)}</span></div>
                 </div>
-                <div style="text-align:center; margin-top:10px; font-size:10px;">TERIMA KASIH</div>
             `;
             window.print();
         }
@@ -511,8 +513,10 @@
             try {
                 await db.collection('barang').add({ nama: nama.toUpperCase(), ecer, grosir, stok: stok || 0 });
                 toast("Barang Tersimpan");
-                document.getElementById('admNama').value = ''; document.getElementById('admEcer').value = '';
-                document.getElementById('admGrosir').value = ''; document.getElementById('admStok').value = '';
+                document.getElementById('admNama').value = ''; 
+                document.getElementById('admEcer').value = '';
+                document.getElementById('admGrosir').value = ''; 
+                document.getElementById('admStok').value = '';
             } catch(e) { toast("Error Simpan", "red"); }
         }
 
