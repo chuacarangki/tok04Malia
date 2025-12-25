@@ -3,58 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AMALIA POS PRO - Final Fix</title>
+    <title>AMALIA POS PRO - Final Price Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root { --accent: #3b82f6; --bg: #020617; }
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); 
-            color: #f8fafc; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
-            margin: 0; 
-        }
-        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #f8fafc; height: 100vh; display: flex; flex-direction: column; overflow: hidden; margin: 0; }
         .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .font-mono-price { font-family: 'JetBrains Mono', monospace; }
-        
         .custom-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(59, 130, 246, 0.3) transparent; }
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.3); border-radius: 10px; }
-
         .badge-stok { background: #facc15; color: #000; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 10px; }
         .badge-stok-low { background: #ef4444; color: white; }
-
-        .nav-btn { 
-            transition: 0.3s; color: #94a3b8; font-weight: 700; display: flex; 
-            flex-direction: column; align-items: center; justify-content: center; flex: 1; font-size: 10px;
-        }
+        .nav-btn { transition: 0.3s; color: #94a3b8; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; font-size: 10px; }
         .nav-btn.active { color: #3b82f6; }
-
         #toast { position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%) scale(0.5); z-index: 9999; opacity: 0; visibility: hidden; transition: 0.4s; width: 90%; max-width: 320px; }
         #toast.show { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-
-        input { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); color: white; outline: none; padding: 0 16px; min-height: 48px; }
-        
+        input { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); color: white; outline: none; padding: 0 16px; min-height: 48px; border-radius: 12px; }
         @media (max-width: 768px) {
             .section-page { height: calc(100vh - 64px); padding-bottom: 20px; }
-            #dropdownSearch { 
-                position: fixed; 
-                top: 135px; 
-                left: 12px; 
-                right: 12px; 
-                z-index: 9999; 
-                max-height: 50vh; 
-                background: #111827;
-                border: 2px solid #3b82f6;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-            }
+            #dropdownSearch { position: fixed; top: 135px; left: 12px; right: 12px; z-index: 9999; max-height: 50vh; background: #0f172a; border: 2px solid #3b82f6; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); border-radius: 16px; }
         }
     </style>
 </head>
@@ -72,7 +43,7 @@
         <div class="glass-card p-8 rounded-[40px] w-full max-w-xs text-center">
             <h1 class="text-4xl font-black italic text-blue-500 mb-1">AMALIA</h1>
             <p class="text-[8px] font-bold text-slate-500 uppercase tracking-[0.3em] mb-8">Point of Sale</p>
-            <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="w-full rounded-2xl text-center font-black uppercase mb-4">
+            <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="w-full text-center font-black uppercase mb-4">
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="attemptLogin('Kasir')" class="bg-white/5 h-12 rounded-xl font-bold text-[10px] uppercase">KASIR</button>
                 <button onclick="attemptLogin('Admin')" class="bg-blue-600 h-12 rounded-xl font-bold text-[10px] uppercase">ADMIN</button>
@@ -83,7 +54,7 @@
     <header class="p-4 flex justify-between items-center glass-card border-b border-white/5 z-[60]">
         <div class="flex items-center gap-2">
             <div class="w-7 h-7 bg-blue-600 rounded flex items-center justify-center font-black italic text-white text-sm">A</div>
-            <h1 class="text-sm font-black italic text-white">AMALIA</h1>
+            <h1 class="text-sm font-black italic text-white uppercase tracking-tighter">Amalia Store</h1>
         </div>
         <div class="flex items-center gap-3">
             <div class="text-right">
@@ -98,20 +69,14 @@
         <div id="sec-kasir" class="section-page h-full flex flex-col lg:flex-row">
             <div class="flex-grow flex flex-col p-3 overflow-hidden">
                 <div class="relative mb-3 z-[70]">
-                    <input type="text" id="inCari" oninput="searchBarang(this.value)" placeholder="Cari Nama Produk..." class="w-full rounded-xl font-bold text-sm h-14">
-                    <div id="dropdownSearch" class="glass-card rounded-xl mt-1 overflow-y-auto custom-scroll hidden"></div>
+                    <input type="text" id="inCari" oninput="searchBarang(this.value)" placeholder="Cari Nama Produk..." class="w-full font-bold text-sm h-14">
+                    <div id="dropdownSearch" class="glass-card mt-1 overflow-y-auto custom-scroll hidden"></div>
                 </div>
-                
                 <div class="glass-card rounded-2xl flex-grow flex flex-col overflow-hidden">
                     <div class="overflow-y-auto flex-grow custom-scroll">
                         <table class="w-full text-left">
                             <thead class="bg-slate-900/90 sticky top-0 text-[10px] font-bold uppercase text-slate-500 z-10">
-                                <tr>
-                                    <th class="p-3">Item</th>
-                                    <th class="p-3 text-center">Qty</th>
-                                    <th class="p-3 text-right">Sub</th>
-                                    <th class="p-3"></th>
-                                </tr>
+                                <tr><th class="p-3">Item</th><th class="p-3 text-center">Qty</th><th class="p-3 text-right">Sub</th><th class="p-3"></th></tr>
                             </thead>
                             <tbody id="tabelKasir" class="divide-y divide-white/5"></tbody>
                         </table>
@@ -120,48 +85,45 @@
             </div>
 
             <div id="side-panel" class="w-full lg:w-80 p-3 glass-card border-t border-white/10 flex flex-col gap-3 shrink-0">
-                <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-4 rounded-xl">
+                <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-4 rounded-xl shadow-lg">
                     <p class="text-[10px] font-bold uppercase opacity-70">Total Bayar</p>
                     <h1 id="totalBelanja" class="text-3xl font-black font-mono-price tracking-tighter">Rp 0</h1>
                 </div>
-                
                 <div class="space-y-3">
                     <div class="relative">
-                        <label class="absolute left-4 top-2 text-[10px] font-bold text-orange-400 uppercase">Diskon (Rp)</label>
-                        <input type="text" id="diskonManual" oninput="formatMoneyInput(this); renderCart()" class="w-full pt-6 pb-2 rounded-xl text-lg font-bold text-orange-400" placeholder="0">
+                        <label class="absolute left-4 top-2 text-[10px] font-bold text-orange-400 uppercase">Diskon</label>
+                        <input type="text" id="diskonManual" oninput="formatMoneyInput(this); renderCart()" class="w-full pt-6 pb-2 text-lg font-bold text-orange-400" placeholder="0">
                     </div>
                     <div class="relative">
-                        <label class="absolute left-4 top-2 text-[10px] font-bold text-blue-400 uppercase">Tunai / Bayar</label>
-                        <input type="text" id="bayarTunai" oninput="formatMoneyInput(this); hitungKembali()" class="w-full pt-6 pb-2 rounded-xl text-xl font-black text-white" placeholder="0">
+                        <label class="absolute left-4 top-2 text-[10px] font-bold text-blue-400 uppercase">Bayar Tunai</label>
+                        <input type="text" id="bayarTunai" oninput="formatMoneyInput(this); hitungKembali()" class="w-full pt-6 pb-2 text-xl font-black text-white" placeholder="0">
                     </div>
                 </div>
-
                 <div class="p-3 bg-slate-900/50 rounded-xl flex justify-between items-center border border-white/5">
-                    <span class="text-[10px] text-slate-500 font-bold uppercase">Kembalian</span>
+                    <span class="text-[10px] text-slate-500 font-bold uppercase">Kembali</span>
                     <span id="kembalianText" class="text-lg font-black text-green-400 font-mono-price">Rp 0</span>
                 </div>
-                <button onclick="prosesBayar()" class="w-full bg-blue-600 h-16 rounded-2xl font-black text-lg uppercase shadow-xl">Proses Bayar</button>
+                <button onclick="prosesBayar()" class="w-full bg-blue-600 h-16 rounded-2xl font-black text-lg uppercase shadow-xl active:scale-95 transition-all">Selesaikan Transaksi</button>
             </div>
         </div>
 
         <div id="sec-history" class="section-page hidden h-full overflow-y-auto p-4"><div class="max-w-md mx-auto space-y-3" id="history-list"></div></div>
-        
         <div id="sec-laporan" class="section-page hidden h-full overflow-y-auto p-4">
              <div class="max-w-md mx-auto space-y-4">
-                <div class="grid grid-cols-2 gap-3">
-                    <div class="glass-card p-4 rounded-xl border-l-4 border-blue-500 text-center">
+                <div class="grid grid-cols-2 gap-3 text-center">
+                    <div class="glass-card p-4 rounded-xl border-l-4 border-blue-500">
                         <p class="text-[8px] text-blue-400 font-black uppercase">Omzet Total</p>
                         <h1 id="omzet-all" class="text-sm font-black font-mono-price">Rp 0</h1>
                     </div>
-                    <div class="glass-card p-4 rounded-xl border-l-4 border-emerald-500 text-center">
+                    <div class="glass-card p-4 rounded-xl border-l-4 border-emerald-500">
                         <p class="text-[8px] text-slate-500 font-black uppercase">Total Trx</p>
                         <h1 id="all-count-total" class="text-sm font-black">0</h1>
                     </div>
                 </div>
                 <div class="glass-card p-4 rounded-xl space-y-3">
                     <div class="flex gap-2">
-                        <input type="date" id="pick-day" onchange="filterLaporan()" class="flex-1 rounded-lg text-xs font-bold">
-                        <input type="month" id="pick-month" onchange="filterLaporan()" class="flex-1 rounded-lg text-xs font-bold">
+                        <input type="date" id="pick-day" onchange="filterLaporan()" class="flex-1 text-xs font-bold">
+                        <input type="month" id="pick-month" onchange="filterLaporan()" class="flex-1 text-xs font-bold">
                     </div>
                     <div class="border-t border-white/5 pt-3 flex justify-between items-center">
                         <p class="text-[10px] text-yellow-500 font-bold uppercase">Hasil: <span id="lap-count" class="text-white">0</span></p>
@@ -174,19 +136,18 @@
         <div id="sec-admin" class="section-page hidden h-full overflow-y-auto p-4">
             <div class="max-w-md mx-auto space-y-6">
                 <div class="glass-card p-5 rounded-2xl">
-                    <h2 class="text-xs font-black uppercase mb-4 text-blue-400 italic">Data Produk Baru</h2>
+                    <h2 class="text-xs font-black uppercase mb-4 text-blue-400 italic">Database Produk</h2>
                     <div class="grid grid-cols-1 gap-3">
-                        <input type="text" id="admNama" placeholder="NAMA BARANG" class="w-full rounded-xl font-black uppercase">
+                        <input type="text" id="admNama" placeholder="NAMA BARANG" class="w-full font-black uppercase">
                         <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="admEcer" oninput="formatMoneyInput(this)" placeholder="HARGA ECER" class="w-full rounded-xl font-mono-price">
-                            <input type="text" id="admGrosir" oninput="formatMoneyInput(this)" placeholder="HARGA BOX" class="w-full rounded-xl font-mono-price">
+                            <input type="text" id="admEcer" oninput="formatMoneyInput(this)" placeholder="HARGA JUAL" class="w-full font-mono-price">
+                            <input type="number" id="admStok" placeholder="STOK" class="w-full font-bold">
                         </div>
-                        <input type="number" id="admStok" placeholder="STOK AWAL" class="w-full rounded-xl font-bold">
-                        <button onclick="simpanBarang()" class="w-full bg-blue-600 h-12 rounded-xl font-bold uppercase">Simpan Barang</button>
+                        <button onclick="simpanBarang()" class="w-full bg-blue-600 h-12 rounded-xl font-bold uppercase">Tambah ke Database</button>
                     </div>
                 </div>
                 <div class="glass-card rounded-2xl overflow-hidden">
-                    <div class="p-3 border-b border-white/5"><input type="text" oninput="renderAdminTable(this.value)" placeholder="CARI DATABASE..." class="w-full rounded-xl uppercase text-xs"></div>
+                    <div class="p-3 border-b border-white/5"><input type="text" oninput="renderAdminTable(this.value)" placeholder="Cari di database..." class="w-full uppercase text-xs"></div>
                     <div class="overflow-x-auto"><table class="w-full text-[10px]"><tbody id="tabelAdmin" class="divide-y divide-white/5"></tbody></table></div>
                 </div>
             </div>
@@ -194,17 +155,17 @@
     </main>
 
     <nav id="main-nav" class="hidden glass-card border-t border-white/10 h-16 flex items-center justify-around z-[100]">
-        <button id="nav-kasir" onclick="showSection('kasir')" class="nav-btn active"><span class="text-xl">🛒</span><span>KASIR</span></button>
-        <button id="nav-history" onclick="showSection('history')" class="nav-btn"><span class="text-xl">🕒</span><span>HISTORY</span></button>
-        <button id="nav-laporan" onclick="showSection('laporan')" class="nav-btn"><span class="text-xl">📊</span><span>LAPORAN</span></button>
-        <button id="nav-admin" onclick="showSection('admin')" class="nav-btn hidden !text-orange-400"><span class="text-xl">⚙️</span><span>ADMIN</span></button>
+        <button id="nav-kasir" onclick="showSection('kasir')" class="nav-btn active"><span>🛒</span><span>KASIR</span></button>
+        <button id="nav-history" onclick="showSection('history')" class="nav-btn"><span>🕒</span><span>HISTORY</span></button>
+        <button id="nav-laporan" onclick="showSection('laporan')" class="nav-btn"><span>📊</span><span>LAPORAN</span></button>
+        <button id="nav-admin" onclick="showSection('admin')" class="nav-btn hidden !text-orange-400"><span>⚙️</span><span>ADMIN</span></button>
     </nav>
 
-    <div id="modal-pass" class="fixed inset-0 z-[1001] bg-black/95 hidden items-center justify-center p-6 backdrop-blur-xl">
+    <div id="modal-pass" class="fixed inset-0 z-[1001] bg-black/95 hidden items-center justify-center p-6 backdrop-blur-md">
         <div class="glass-card p-8 rounded-[35px] w-full max-w-xs text-center">
-            <h2 class="text-xs font-bold mb-4 text-white uppercase tracking-widest">PIN Admin</h2>
-            <input type="password" id="admin-pass-input" class="w-full rounded-xl mb-4 text-center text-3xl font-bold tracking-[0.5em]">
-            <button onclick="checkAdminPass()" class="w-full bg-blue-600 h-12 rounded-xl font-bold uppercase">Akses</button>
+            <h2 class="text-xs font-bold mb-4 text-white uppercase tracking-widest">Akses Admin</h2>
+            <input type="password" id="admin-pass-input" class="w-full mb-4 text-center text-3xl font-bold tracking-[0.5em]">
+            <button onclick="checkAdminPass()" class="w-full bg-blue-600 h-12 rounded-xl font-bold uppercase">Masuk</button>
             <button onclick="closePassModal()" class="mt-4 text-[10px] text-slate-500 font-bold uppercase w-full">Kembali</button>
         </div>
     </div>
@@ -212,7 +173,7 @@
     <div id="modal-print-confirm" class="fixed inset-0 z-[1010] bg-black/95 hidden items-center justify-center p-6">
         <div class="glass-card p-8 rounded-[40px] w-full max-w-xs text-center">
             <h2 class="text-xl font-black text-white uppercase mb-4">BERHASIL!</h2>
-            <p class="text-slate-400 font-bold text-xs mb-6 uppercase">Cetak Struk Sekarang?</p>
+            <p class="text-slate-400 font-bold text-xs mb-6 uppercase">Cetak Struk Transaksi?</p>
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="handlePrintDecision(true)" class="bg-blue-600 h-12 rounded-2xl font-black uppercase">YA</button>
                 <button onclick="handlePrintDecision(false)" class="bg-white/5 h-12 rounded-2xl font-black uppercase">TIDAK</button>
@@ -234,12 +195,18 @@
 
         let dataBarang = [], dataTransaksi = [], keranjang = [], userAktif = '', userRole = '', lastTransactionId = null;
 
-        const formatIDR = (n) => new Intl.NumberFormat('id-ID').format(Number(n) || 0);
+        // PERBAIKAN LOGIKA HARGA
+        const formatIDR = (n) => {
+            let num = Number(n);
+            if (isNaN(num)) return "0";
+            return new Intl.NumberFormat('id-ID').format(num);
+        };
         
         const toNum = (val) => {
-            if (!val) return 0;
+            if (val === null || val === undefined || val === "") return 0;
             if (typeof val === 'number') return val;
-            return parseInt(val.toString().replace(/\./g, '').replace(/[^0-9]/g, '')) || 0;
+            let clean = val.toString().replace(/\./g, '').replace(/[^0-9]/g, '');
+            return parseInt(clean) || 0;
         };
 
         function formatMoneyInput(el) {
@@ -256,7 +223,7 @@
 
         function attemptLogin(role) {
             const name = document.getElementById('inNamaUser').value;
-            if(!name) return toast("Isi Nama!");
+            if(!name) return toast("NAMA WAJIB DIISI!");
             if(role === 'Admin') document.getElementById('modal-pass').classList.replace('hidden', 'flex');
             else loginSuccess(name, 'Kasir');
         }
@@ -282,7 +249,11 @@
 
         function syncData() {
             db.collection("barang").onSnapshot(snap => {
-                dataBarang = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                dataBarang = snap.docs.map(d => {
+                    const item = d.data();
+                    // Pastikan harga ecer selalu dalam bentuk Number murni
+                    return { id: d.id, ...item, ecer: Number(item.ecer) || 0 };
+                });
                 renderAdminTable();
             });
             db.collection("transaksi").orderBy("waktu", "desc").onSnapshot(snap => {
@@ -304,7 +275,7 @@
             const filtered = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
             
             drop.innerHTML = filtered.map(b => `
-                <div onclick="addToCart('${b.id}')" class="p-4 border-b border-white/5 flex justify-between items-center active:bg-blue-600">
+                <div onclick="addToCart('${b.id}')" class="p-4 border-b border-white/5 flex justify-between items-center active:bg-blue-600 transition-all">
                     <div>
                         <p class="text-sm font-bold uppercase text-white">${b.nama}</p>
                         <p class="text-xs text-blue-400 font-mono-price">Rp ${formatIDR(b.ecer)}</p>
@@ -319,10 +290,10 @@
             const item = dataBarang.find(b => b.id === id);
             const inCart = keranjang.find(k => k.id === id);
             if(inCart) {
-                if(inCart.qty >= item.stok) return toast("Stok Habis!");
+                if(inCart.qty >= item.stok) return toast("STOK TIDAK CUKUP!");
                 inCart.qty++;
             } else {
-                if(item.stok <= 0) return toast("Stok Kosong!");
+                if(item.stok <= 0) return toast("STOK KOSONG!");
                 keranjang.push({ ...item, qty: 1 });
             }
             document.getElementById('inCari').value = '';
@@ -344,13 +315,13 @@
                         </td>
                         <td class="p-3 text-center">
                             <div class="flex items-center justify-center gap-2">
-                                <button onclick="updateQty(${i}, -1)" class="w-7 h-7 bg-white/5 rounded">-</button>
-                                <span class="font-bold text-xs">${k.qty}</span>
-                                <button onclick="updateQty(${i}, 1)" class="w-7 h-7 bg-blue-600/20 text-blue-400 rounded">+</button>
+                                <button onclick="updateQty(${i}, -1)" class="w-8 h-8 bg-white/5 rounded-lg">-</button>
+                                <span class="font-bold text-xs w-4">${k.qty}</span>
+                                <button onclick="updateQty(${i}, 1)" class="w-8 h-8 bg-blue-600/20 text-blue-400 rounded-lg">+</button>
                             </div>
                         </td>
                         <td class="p-3 text-right font-mono-price text-[10px]">Rp ${formatIDR(sub)}</td>
-                        <td class="p-3 text-right text-red-500" onclick="keranjang.splice(${i},1);renderCart()">✕</td>
+                        <td class="p-3 text-right text-red-500 font-bold" onclick="keranjang.splice(${i},1);renderCart()">✕</td>
                     </tr>
                 `;
             }).join('');
@@ -364,7 +335,7 @@
         function updateQty(idx, n) {
             const item = keranjang[idx];
             const original = dataBarang.find(b => b.id === item.id);
-            if(n > 0 && item.qty >= original.stok) return toast("Maks stok!");
+            if(n > 0 && item.qty >= original.stok) return toast("STOK TERBATAS!");
             item.qty += n;
             if(item.qty <= 0) keranjang.splice(idx, 1);
             renderCart();
@@ -379,8 +350,8 @@
         async function prosesBayar() {
             const total = toNum(document.getElementById('totalBelanja').innerText);
             const bayar = toNum(document.getElementById('bayarTunai').value);
-            if(total <= 0) return toast("Keranjang Kosong!");
-            if(bayar < total) return toast("Uang Kurang!");
+            if(total <= 0) return toast("KERANJANG KOSONG!");
+            if(bayar < total) return toast("UANG KURANG!");
 
             try {
                 const batch = db.batch();
@@ -406,7 +377,7 @@
                 document.getElementById('bayarTunai').value = '';
                 document.getElementById('diskonManual').value = '';
                 renderCart();
-            } catch(e) { toast("Error!"); }
+            } catch(e) { toast("GAGAL SIMPAN!"); }
         }
 
         function handlePrintDecision(yes) {
@@ -419,15 +390,20 @@
             if(!trx) return;
             const area = document.getElementById('print-area');
             area.innerHTML = `
-                <center><h2>AMALIA STORE</h2></center>
-                <hr>
-                <pre>ID: ${trx.idTrx}\nKSR: ${trx.kasir}\nTGL: ${new Date(trx.waktu).toLocaleString()}</pre>
-                <hr>
-                ${trx.items.map(i => `<div style="display:flex;justify-content:space-between"><span>${i.nama} x${i.qty}</span><span>${formatIDR(i.qty*i.ecer)}</span></div>`).join('')}
-                <hr>
-                <div style="display:flex;justify-content:space-between"><b>TOTAL</b><b>Rp ${formatIDR(trx.total)}</b></div>
-                <div style="display:flex;justify-content:space-between">TUNAI<span>Rp ${formatIDR(trx.bayar)}</span></div>
-                <div style="display:flex;justify-content:space-between">KEMBALI<span>Rp ${formatIDR(trx.bayar-trx.total)}</span></div>
+                <center><h2 style="margin:0">AMALIA STORE</h2></center>
+                <hr style="border:0.5px dashed #000">
+                <div style="font-size:9px">
+                    ID: ${trx.idTrx}<br>
+                    KSR: ${trx.kasir}<br>
+                    JAM: ${new Date(trx.waktu).toLocaleString()}
+                </div>
+                <hr style="border:0.5px dashed #000">
+                ${trx.items.map(i => `<div style="display:flex;justify-content:space-between;font-size:9px"><span>${i.nama} x${i.qty}</span><span>${formatIDR(i.qty*i.ecer)}</span></div>`).join('')}
+                <hr style="border:0.5px dashed #000">
+                <div style="display:flex;justify-content:space-between;font-size:10px"><b>TOTAL</b><b>Rp ${formatIDR(trx.total)}</b></div>
+                <div style="display:flex;justify-content:space-between;font-size:9px">TUNAI<span>Rp ${formatIDR(trx.bayar)}</span></div>
+                <div style="display:flex;justify-content:space-between;font-size:9px">KEMBALI<span>Rp ${formatIDR(trx.bayar-trx.total)}</span></div>
+                <center style="margin-top:10px;font-size:9px">TERIMA KASIH</center>
             `;
             window.print();
         }
@@ -436,13 +412,13 @@
             document.getElementById('history-list').innerHTML = dataTransaksi.map(t => `
                 <div class="glass-card p-4 rounded-2xl flex justify-between items-center border-l-4 border-blue-500">
                     <div><p class="text-xs font-black text-white">${t.idTrx}</p><p class="text-[10px] text-slate-400">${new Date(t.waktu).toLocaleTimeString()}</p></div>
-                    <div class="flex items-center gap-4"><p class="text-sm font-black font-mono-price text-blue-400">Rp ${formatIDR(t.total)}</p><button onclick="cetakStruk('${t.id}')">🖨️</button></div>
+                    <div class="flex items-center gap-4"><p class="text-sm font-black font-mono-price text-blue-400">Rp ${formatIDR(t.total)}</p><button onclick="cetakStruk('${t.id}')" class="p-2 bg-white/5 rounded-lg">🖨️</button></div>
                 </div>
             `).join('');
         }
 
         function updateLaporan() {
-            const totalOmzet = dataTransaksi.reduce((a, b) => a + b.total, 0);
+            const totalOmzet = dataTransaksi.reduce((a, b) => a + Number(b.total), 0);
             document.getElementById('omzet-all').innerText = `Rp ${formatIDR(totalOmzet)}`;
             document.getElementById('all-count-total').innerText = dataTransaksi.length;
             filterLaporan();
@@ -455,28 +431,27 @@
             if(day) filtered = filtered.filter(t => new Date(t.waktu).toISOString().split('T')[0] === day);
             else if(month) filtered = filtered.filter(t => new Date(t.waktu).toISOString().slice(0, 7) === month);
             document.getElementById('lap-count').innerText = filtered.length;
-            document.getElementById('lap-omzet').innerText = `Rp ${formatIDR(filtered.reduce((a, b) => a + b.total, 0))}`;
+            document.getElementById('lap-omzet').innerText = `Rp ${formatIDR(filtered.reduce((a, b) => a + Number(b.total), 0))}`;
         }
 
         async function simpanBarang() {
             const nama = document.getElementById('admNama').value.toUpperCase();
             const ecer = toNum(document.getElementById('admEcer').value);
-            const grosir = toNum(document.getElementById('admGrosir').value);
             const stok = parseInt(document.getElementById('admStok').value) || 0;
-            if(!nama || !ecer) return toast("Lengkapi!");
-            await db.collection('barang').add({ nama, ecer, grosir, stok });
-            toast("Tersimpan");
-            ['admNama','admEcer','admGrosir','admStok'].forEach(id => document.getElementById(id).value = '');
+            if(!nama || !ecer) return toast("LENGKAPI DATA!");
+            await db.collection('barang').add({ nama, ecer, stok });
+            toast("BARANG DITAMBAHKAN");
+            ['admNama','admEcer','admStok'].forEach(id => document.getElementById(id).value = '');
         }
 
         function renderAdminTable(q = '') {
             const filtered = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
             document.getElementById('tabelAdmin').innerHTML = filtered.map(b => `
-                <tr>
-                    <td class="p-4 text-white uppercase font-bold">${b.nama}</td>
-                    <td class="p-4 font-mono-price">Rp ${formatIDR(b.ecer)}</td>
-                    <td class="p-4 text-center">${b.stok}</td>
-                    <td class="p-4 text-right text-red-500" onclick="if(confirm('Hapus?')) db.collection('barang').doc('${b.id}').delete()">✕</td>
+                <tr class="hover:bg-white/5">
+                    <td class="p-4 text-white uppercase font-bold text-[11px]">${b.nama}</td>
+                    <td class="p-4 font-mono-price text-blue-400">Rp ${formatIDR(b.ecer)}</td>
+                    <td class="p-4 text-center font-bold">${b.stok}</td>
+                    <td class="p-4 text-right text-red-500 font-bold" onclick="if(confirm('Hapus item ini?')) db.collection('barang').doc('${b.id}').delete()">✕</td>
                 </tr>
             `).join('');
         }
