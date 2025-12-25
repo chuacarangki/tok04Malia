@@ -19,100 +19,94 @@
         .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .font-mono-price { font-family: 'JetBrains Mono', monospace; }
         
-        /* Layout Fix sesuai Gambar 2 */
-        .main-container { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 145px); }
-        .product-section { flex: 1; padding: 20px; overflow-y: auto; }
-        .payment-section { width: 350px; padding: 20px; background: rgba(2, 6, 23, 0.8); border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; }
-
-        /* Badge Stok Kuning */
-        .badge-stok { 
-            background: #facc15; color: #000; padding: 2px 8px; border-radius: 6px; 
-            font-weight: 800; font-size: 11px; display: inline-block; margin-top: 5px;
+        /* Overlay Login harus berada di paling depan */
+        #login-page { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            z-index: 9999; 
+            background: #020617; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px;
         }
 
-        /* Navigasi Bawah */
+        .main-container { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 145px); }
+        .product-section { flex: 1; padding: 15px; overflow-y: auto; }
+        .payment-section { width: 320px; padding: 20px; background: rgba(2, 6, 23, 0.9); border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; }
+
+        @media (max-width: 768px) {
+            .payment-section { display: none; } /* Sembunyikan sidebar di HP agar tidak berantakan */
+            .main-container { height: calc(100vh - 80px); }
+        }
+
+        .badge-stok { background: #facc15; color: #000; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 11px; }
+
         .bottom-nav { 
             height: 80px; background: #0f172a; border-top: 1px solid rgba(255,255,255,0.1); 
             display: flex; align-items: center; justify-content: space-around;
         }
-        .nav-item { 
-            flex: 1; display: flex; flex-direction: column; align-items: center; 
-            color: #94a3b8; font-size: 10px; font-weight: 700; text-transform: uppercase;
-            padding: 10px; transition: 0.3s; cursor: pointer;
-        }
-        .nav-item.active { color: white; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 15px; margin: 0 10px; }
+        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; color: #94a3b8; font-size: 10px; font-weight: 700; cursor: pointer; }
+        .nav-item.active { color: white; background: rgba(59, 130, 246, 0.1); border-radius: 15px; margin: 0 5px; padding: 5px; border: 1px solid #3b82f6; }
         
         input { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; padding: 12px; outline: none; }
-        input:focus { border-color: var(--accent); }
-        .btn-primary { background: #3b82f6; color: white; font-weight: 800; border-radius: 15px; padding: 18px; text-transform: uppercase; }
-
-        /* Login Overlay */
-        #login-page { position: fixed; inset: 0; z-index: 9999; background: #020617; display: flex; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body>
 
     <div id="login-page">
-        <div class="glass-card p-12 rounded-[50px] w-full max-w-sm text-center border-white/10">
-            <h1 class="text-5xl font-black italic text-blue-500 mb-2">AMALIA</h1>
-            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-10">Point of Sale Pro</p>
-            <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="w-full p-5 rounded-2xl text-center font-black uppercase mb-6">
-            <div class="grid grid-cols-2 gap-4">
-                <button onclick="attemptLogin('Kasir')" class="bg-white/5 p-5 rounded-2xl font-bold text-xs uppercase border border-white/10 hover:bg-white/10">KASIR</button>
-                <button onclick="attemptLogin('Admin')" class="bg-blue-600 p-5 rounded-2xl font-bold text-xs uppercase shadow-lg shadow-blue-500/20">ADMIN</button>
+        <div class="glass-card p-10 rounded-[40px] w-full max-w-sm text-center border-white/10">
+            <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center font-black italic text-white text-3xl mx-auto mb-4">A</div>
+            <h1 class="text-4xl font-black italic text-white mb-1">AMALIA</h1>
+            <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-8">Point of Sale Mobile</p>
+            <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="w-full p-4 rounded-xl text-center font-black uppercase mb-4 text-sm">
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="attemptLogin('Kasir')" class="bg-white/5 p-4 rounded-xl font-bold text-[10px] uppercase border border-white/10">KASIR</button>
+                <button onclick="attemptLogin('Admin')" class="bg-blue-600 p-4 rounded-xl font-bold text-[10px] uppercase">ADMIN</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-pass" class="fixed inset-0 z-[10000] bg-black/90 hidden items-center justify-center p-6 backdrop-blur-xl">
-        <div class="glass-card p-10 rounded-[40px] w-full max-w-xs text-center">
-            <h2 class="text-sm font-bold mb-4 text-white uppercase tracking-widest">PIN Admin</h2>
-            <input type="password" id="admin-pass-input" class="w-full p-5 rounded-2xl mb-6 text-center text-3xl font-bold tracking-[0.5em]" pattern="\d*">
-            <button onclick="checkAdminPass()" class="w-full bg-blue-600 py-4 rounded-2xl font-bold uppercase">Verifikasi</button>
-            <button onclick="closePassModal()" class="mt-4 text-[10px] text-slate-500 font-bold uppercase">Kembali</button>
+    <div id="modal-pass" class="fixed inset-0 z-[10000] bg-black/95 hidden items-center justify-center p-6 backdrop-blur-xl">
+        <div class="glass-card p-8 rounded-[30px] w-full max-w-xs text-center">
+            <h2 class="text-xs font-bold mb-4 text-white uppercase tracking-widest">Masukkan PIN</h2>
+            <input type="password" id="admin-pass-input" class="w-full p-4 rounded-xl mb-6 text-center text-3xl font-bold tracking-[0.5em]" inputmode="numeric">
+            <button onclick="checkAdminPass()" class="w-full bg-blue-600 py-4 rounded-xl font-bold uppercase text-xs">Masuk</button>
+            <button onclick="closePassModal()" class="mt-4 text-[9px] text-slate-500 font-bold uppercase">Batal</button>
         </div>
     </div>
 
     <header class="h-16 px-6 flex justify-between items-center border-b border-white/5">
-        <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center font-black italic text-white text-sm">A</div>
-            <h1 class="text-xl font-black italic text-white">AMALIA</h1>
+        <div class="flex items-center gap-2">
+            <div class="w-7 h-7 bg-blue-600 rounded flex items-center justify-center font-black italic text-white text-xs">A</div>
+            <h1 class="text-lg font-black italic text-white">AMALIA</h1>
         </div>
-        <div class="flex items-center gap-4">
-            <div class="text-right">
-                <p id="user-info" class="text-[10px] font-black text-white uppercase"></p>
-                <p id="role-info" class="text-[8px] font-bold text-blue-500 uppercase"></p>
-            </div>
-            <button onclick="location.reload()" class="text-red-500 bg-red-500/10 p-2 rounded-lg">✕</button>
+        <div class="text-right">
+            <p id="user-info" class="text-[10px] font-black text-white uppercase m-0"></p>
+            <p id="role-info" class="text-[8px] font-bold text-blue-500 uppercase m-0"></p>
         </div>
     </header>
 
     <main class="main-container">
         <div id="sec-kasir" class="product-section">
-            <input type="text" id="inCari" oninput="searchBarang(this.value)" placeholder="Cari Produk..." class="w-full mb-6 text-lg font-bold">
+            <input type="text" id="inCari" oninput="searchBarang(this.value)" placeholder="Cari Nama Produk..." class="w-full mb-4 font-bold">
             <div id="item-list" class="space-y-3"></div>
         </div>
 
         <aside class="payment-section">
-            <div class="bg-blue-600 p-6 rounded-[20px] shadow-lg">
-                <p class="text-[10px] font-bold uppercase opacity-80 mb-1">Total Tagihan</p>
-                <h1 id="totalBelanja" class="text-4xl font-black font-mono-price text-white">Rp 0</h1>
+            <div class="bg-blue-600 p-5 rounded-2xl shadow-lg">
+                <p class="text-[9px] font-bold uppercase opacity-80 mb-1">Total</p>
+                <h1 id="totalBelanja" class="text-3xl font-black font-mono-price text-white">Rp 0</h1>
             </div>
-            <div class="space-y-4 mt-2">
-                <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase">Diskon</label>
-                    <input type="text" id="diskonManual" oninput="formatMoneyInput(this); renderCart()" class="w-full mt-1 text-right font-bold" placeholder="0">
-                </div>
-                <div>
-                    <label class="text-[10px] font-black text-slate-500 uppercase">Tunai</label>
-                    <input type="text" id="bayarTunai" oninput="formatMoneyInput(this); hitungKembali()" class="w-full mt-1 text-right text-xl font-black" placeholder="Rp 0">
-                </div>
-                <div class="flex justify-between items-center p-3 bg-white/5 rounded-xl">
-                    <span class="text-[10px] font-black text-slate-500 uppercase">Kembali</span>
-                    <span id="kembalianText" class="text-xl font-black text-green-400 font-mono-price">Rp 0</span>
+            <div class="space-y-4">
+                <input type="text" id="bayarTunai" oninput="formatMoneyInput(this); hitungKembali()" class="w-full text-center text-xl font-black" placeholder="TUNAI">
+                <div class="flex justify-between p-3 bg-white/5 rounded-xl">
+                    <span class="text-[9px] font-black text-slate-500 uppercase">Kembali</span>
+                    <span id="kembalianText" class="text-lg font-black text-green-400">Rp 0</span>
                 </div>
             </div>
-            <button onclick="prosesBayar()" class="btn-primary mt-auto">Selesaikan Transaksi</button>
+            <button onclick="prosesBayar()" class="bg-blue-600 p-4 rounded-xl font-black text-xs uppercase mt-auto">BAYAR</button>
         </aside>
     </main>
 
@@ -123,16 +117,13 @@
         <div onclick="showSection('history')" id="nav-history" class="nav-item">
             <span class="text-xl mb-1">📜</span><span>Riwayat</span>
         </div>
-        <div onclick="showSection('laporan')" id="nav-laporan" class="nav-item">
-            <span class="text-xl mb-1">📈</span><span>Laporan</span>
-        </div>
-        <div id="nav-admin" onclick="showSection('admin')" class="nav-item hidden">
+        <div onclick="showSection('admin')" id="nav-admin" class="nav-item hidden">
             <span class="text-xl mb-1">⚙️</span><span>Admin</span>
         </div>
     </nav>
 
     <script>
-        // CONFIG FIREBASE
+        // CONFIG FIREBASE (Sesuai Akun Anda)
         const config = {
             apiKey: "AIzaSyBhrN6vuBzuxwFgPI-iXJky6ErDz8auclY",
             authDomain: "toko4malia.firebaseapp.com",
@@ -148,25 +139,29 @@
 
         function formatIDR(n) { return new Intl.NumberFormat('id-ID').format(n || 0); }
         function toNum(s) { return parseInt(s?.toString().replace(/[^0-9]/g, '')) || 0; }
-
         function formatMoneyInput(el) {
             let v = toNum(el.value);
             el.value = v === 0 ? "" : "Rp " + formatIDR(v);
         }
 
-        // --- LOGIN LOGIC ---
+        // LOGIN SYSTEM
         function attemptLogin(role) {
             const name = document.getElementById('inNamaUser').value;
-            if(!name) return alert("Masukkan Nama!");
-            if(role === 'Admin') document.getElementById('modal-pass').classList.replace('hidden', 'flex');
-            else loginSuccess(name, 'Kasir');
+            if(!name) return alert("Isi Nama Petugas!");
+            if(role === 'Admin') {
+                document.getElementById('modal-pass').classList.remove('hidden');
+                document.getElementById('modal-pass').classList.add('flex');
+            } else {
+                loginSuccess(name, 'Kasir');
+            }
         }
 
         function checkAdminPass() {
-            if(document.getElementById('admin-pass-input').value === '1212') {
+            const pin = document.getElementById('admin-pass-input').value;
+            if(pin === '1212') {
                 loginSuccess(document.getElementById('inNamaUser').value, 'Admin');
                 closePassModal();
-            } else { alert("PIN Salah!"); }
+            } else { alert("PIN SALAH!"); }
         }
 
         function loginSuccess(name, role) {
@@ -178,7 +173,10 @@
             syncData();
         }
 
-        function closePassModal() { document.getElementById('modal-pass').classList.replace('flex', 'hidden'); }
+        function closePassModal() {
+            document.getElementById('modal-pass').classList.add('hidden');
+            document.getElementById('modal-pass').classList.remove('flex');
+        }
 
         function syncData() {
             db.collection("barang").onSnapshot(snap => {
@@ -191,12 +189,12 @@
             const container = document.getElementById('item-list');
             const filtered = dataBarang.filter(b => b.nama.toLowerCase().includes(val.toLowerCase()));
             container.innerHTML = filtered.map(b => `
-                <div onclick="addToCart('${b.id}')" class="glass-card p-4 rounded-2xl flex justify-between items-center hover:bg-white/5 cursor-pointer">
+                <div onclick="addToCart('${b.id}')" class="glass-card p-4 rounded-2xl flex justify-between items-center active:bg-blue-600/20">
                     <div>
-                        <h3 class="font-black text-white text-sm uppercase">${b.nama}</h3>
+                        <h3 class="font-black text-white text-xs uppercase">${b.nama}</h3>
                         <span class="badge-stok">STOK: ${b.stok}</span>
                     </div>
-                    <p class="font-mono-price text-blue-400 font-black">Rp ${formatIDR(b.harga)}</p>
+                    <p class="font-mono-price text-blue-400 font-black text-sm">Rp ${formatIDR(b.harga)}</p>
                 </div>
             `).join('');
         }
@@ -209,8 +207,7 @@
 
         function renderCart() {
             let total = keranjang.reduce((a, b) => a + b.harga, 0);
-            const diskon = toNum(document.getElementById('diskonManual').value);
-            document.getElementById('totalBelanja').innerText = "Rp " + formatIDR(Math.max(0, total - diskon));
+            document.getElementById('totalBelanja').innerText = "Rp " + formatIDR(total);
             hitungKembali();
         }
 
