@@ -12,13 +12,9 @@
         :root { --accent: #3b82f6; --bg: #020617; }
         body { 
             font-family: 'Plus Jakarta Sans', sans-serif; 
-            background: var(--bg); 
-            color: #f8fafc; 
-            height: 100vh; 
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden;
-            margin: 0;
+            background: var(--bg); color: #f8fafc; 
+            height: 100vh; display: flex; flex-direction: column; 
+            overflow: hidden; margin: 0;
         }
         .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
         .font-mono-price { font-family: 'JetBrains Mono', monospace; }
@@ -26,15 +22,15 @@
         /* Layout Fix sesuai Gambar 2 */
         .main-container { display: flex; flex: 1; overflow: hidden; height: calc(100vh - 145px); }
         .product-section { flex: 1; padding: 20px; overflow-y: auto; }
-        .payment-section { w-80; padding: 20px; background: rgba(2, 6, 23, 0.8); border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; }
+        .payment-section { width: 350px; padding: 20px; background: rgba(2, 6, 23, 0.8); border-left: 1px solid rgba(255,255,255,0.05); display: flex; flex-direction: column; gap: 15px; }
 
-        /* Badge Stok Kuning sesuai Gambar 2 */
+        /* Badge Stok Kuning */
         .badge-stok { 
             background: #facc15; color: #000; padding: 2px 8px; border-radius: 6px; 
             font-weight: 800; font-size: 11px; display: inline-block; margin-top: 5px;
         }
 
-        /* Navigasi Bawah sesuai Gambar 2 */
+        /* Navigasi Bawah */
         .bottom-nav { 
             height: 80px; background: #0f172a; border-top: 1px solid rgba(255,255,255,0.1); 
             display: flex; align-items: center; justify-content: space-around;
@@ -42,20 +38,40 @@
         .nav-item { 
             flex: 1; display: flex; flex-direction: column; align-items: center; 
             color: #94a3b8; font-size: 10px; font-weight: 700; text-transform: uppercase;
-            padding: 10px; transition: 0.3s;
+            padding: 10px; transition: 0.3s; cursor: pointer;
         }
         .nav-item.active { color: white; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 15px; margin: 0 10px; }
-        .nav-icon { font-size: 20px; margin-bottom: 4px; }
+        
+        input { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; padding: 12px; outline: none; }
+        input:focus { border-color: var(--accent); }
+        .btn-primary { background: #3b82f6; color: white; font-weight: 800; border-radius: 15px; padding: 18px; text-transform: uppercase; }
 
-        /* Input & Buttons */
-        input { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.1); color: white; border-radius: 12px; padding: 12px; }
-        .btn-primary { background: #3b82f6; color: white; font-weight: 800; border-radius: 15px; padding: 18px; text-transform: uppercase; transition: 0.2s; }
-        .btn-primary:active { transform: scale(0.98); }
-
-        #toast { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 10000; display: none; }
+        /* Login Overlay */
+        #login-page { position: fixed; inset: 0; z-index: 9999; background: #020617; display: flex; align-items: center; justify-content: center; padding: 20px; }
     </style>
 </head>
 <body>
+
+    <div id="login-page">
+        <div class="glass-card p-12 rounded-[50px] w-full max-w-sm text-center border-white/10">
+            <h1 class="text-5xl font-black italic text-blue-500 mb-2">AMALIA</h1>
+            <p class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-10">Point of Sale Pro</p>
+            <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="w-full p-5 rounded-2xl text-center font-black uppercase mb-6">
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="attemptLogin('Kasir')" class="bg-white/5 p-5 rounded-2xl font-bold text-xs uppercase border border-white/10 hover:bg-white/10">KASIR</button>
+                <button onclick="attemptLogin('Admin')" class="bg-blue-600 p-5 rounded-2xl font-bold text-xs uppercase shadow-lg shadow-blue-500/20">ADMIN</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-pass" class="fixed inset-0 z-[10000] bg-black/90 hidden items-center justify-center p-6 backdrop-blur-xl">
+        <div class="glass-card p-10 rounded-[40px] w-full max-w-xs text-center">
+            <h2 class="text-sm font-bold mb-4 text-white uppercase tracking-widest">PIN Admin</h2>
+            <input type="password" id="admin-pass-input" class="w-full p-5 rounded-2xl mb-6 text-center text-3xl font-bold tracking-[0.5em]" pattern="\d*">
+            <button onclick="checkAdminPass()" class="w-full bg-blue-600 py-4 rounded-2xl font-bold uppercase">Verifikasi</button>
+            <button onclick="closePassModal()" class="mt-4 text-[10px] text-slate-500 font-bold uppercase">Kembali</button>
+        </div>
+    </div>
 
     <header class="h-16 px-6 flex justify-between items-center border-b border-white/5">
         <div class="flex items-center gap-3">
@@ -63,7 +79,10 @@
             <h1 class="text-xl font-black italic text-white">AMALIA</h1>
         </div>
         <div class="flex items-center gap-4">
-            <div class="text-right"><p id="user-info" class="text-[10px] font-black text-white uppercase"></p></div>
+            <div class="text-right">
+                <p id="user-info" class="text-[10px] font-black text-white uppercase"></p>
+                <p id="role-info" class="text-[8px] font-bold text-blue-500 uppercase"></p>
+            </div>
             <button onclick="location.reload()" class="text-red-500 bg-red-500/10 p-2 rounded-lg">✕</button>
         </div>
     </header>
@@ -71,16 +90,14 @@
     <main class="main-container">
         <div id="sec-kasir" class="product-section">
             <input type="text" id="inCari" oninput="searchBarang(this.value)" placeholder="Cari Produk..." class="w-full mb-6 text-lg font-bold">
-            <div id="item-list" class="space-y-3">
-                </div>
+            <div id="item-list" class="space-y-3"></div>
         </div>
 
         <aside class="payment-section">
             <div class="bg-blue-600 p-6 rounded-[20px] shadow-lg">
                 <p class="text-[10px] font-bold uppercase opacity-80 mb-1">Total Tagihan</p>
-                <h1 id="totalBelanja" class="text-4xl font-black font-mono-price">Rp 0</h1>
+                <h1 id="totalBelanja" class="text-4xl font-black font-mono-price text-white">Rp 0</h1>
             </div>
-            
             <div class="space-y-4 mt-2">
                 <div>
                     <label class="text-[10px] font-black text-slate-500 uppercase">Diskon</label>
@@ -95,24 +112,27 @@
                     <span id="kembalianText" class="text-xl font-black text-green-400 font-mono-price">Rp 0</span>
                 </div>
             </div>
-
-            <button onclick="prosesBayar()" class="btn-primary mt-auto">Proses Transaksi</button>
+            <button onclick="prosesBayar()" class="btn-primary mt-auto">Selesaikan Transaksi</button>
         </aside>
     </main>
 
     <nav class="bottom-nav">
         <div onclick="showSection('kasir')" id="nav-kasir" class="nav-item active">
-            <span class="nav-icon">🛒</span><span>Kasir</span>
+            <span class="text-xl mb-1">🛒</span><span>Kasir</span>
         </div>
         <div onclick="showSection('history')" id="nav-history" class="nav-item">
-            <span class="nav-icon">📜</span><span>Riwayat</span>
+            <span class="text-xl mb-1">📜</span><span>Riwayat</span>
         </div>
         <div onclick="showSection('laporan')" id="nav-laporan" class="nav-item">
-            <span class="nav-icon">📈</span><span>Laporan</span>
+            <span class="text-xl mb-1">📈</span><span>Laporan</span>
+        </div>
+        <div id="nav-admin" onclick="showSection('admin')" class="nav-item hidden">
+            <span class="text-xl mb-1">⚙️</span><span>Admin</span>
         </div>
     </nav>
 
     <script>
+        // CONFIG FIREBASE
         const config = {
             apiKey: "AIzaSyBhrN6vuBzuxwFgPI-iXJky6ErDz8auclY",
             authDomain: "toko4malia.firebaseapp.com",
@@ -124,20 +144,48 @@
         firebase.initializeApp(config);
         const db = firebase.firestore();
 
-        let dataBarang = [], keranjang = [];
+        let dataBarang = [], keranjang = [], userAktif = '', userRole = '';
 
         function formatIDR(n) { return new Intl.NumberFormat('id-ID').format(n || 0); }
         function toNum(s) { return parseInt(s?.toString().replace(/[^0-9]/g, '')) || 0; }
-        
+
         function formatMoneyInput(el) {
             let v = toNum(el.value);
             el.value = v === 0 ? "" : "Rp " + formatIDR(v);
         }
 
-        db.collection("barang").onSnapshot(snap => {
-            dataBarang = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-            searchBarang(''); // Tampilkan semua di awal
-        });
+        // --- LOGIN LOGIC ---
+        function attemptLogin(role) {
+            const name = document.getElementById('inNamaUser').value;
+            if(!name) return alert("Masukkan Nama!");
+            if(role === 'Admin') document.getElementById('modal-pass').classList.replace('hidden', 'flex');
+            else loginSuccess(name, 'Kasir');
+        }
+
+        function checkAdminPass() {
+            if(document.getElementById('admin-pass-input').value === '1212') {
+                loginSuccess(document.getElementById('inNamaUser').value, 'Admin');
+                closePassModal();
+            } else { alert("PIN Salah!"); }
+        }
+
+        function loginSuccess(name, role) {
+            userAktif = name; userRole = role;
+            document.getElementById('login-page').style.display = 'none';
+            document.getElementById('user-info').innerText = name;
+            document.getElementById('role-info').innerText = role;
+            if(role === 'Admin') document.getElementById('nav-admin').classList.remove('hidden');
+            syncData();
+        }
+
+        function closePassModal() { document.getElementById('modal-pass').classList.replace('flex', 'hidden'); }
+
+        function syncData() {
+            db.collection("barang").onSnapshot(snap => {
+                dataBarang = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                searchBarang('');
+            });
+        }
 
         function searchBarang(val) {
             const container = document.getElementById('item-list');
@@ -156,13 +204,13 @@
         function addToCart(id) {
             const b = dataBarang.find(x => x.id === id);
             keranjang.push(b);
-            calculateTotal();
+            renderCart();
         }
 
-        function calculateTotal() {
+        function renderCart() {
             let total = keranjang.reduce((a, b) => a + b.harga, 0);
             const diskon = toNum(document.getElementById('diskonManual').value);
-            document.getElementById('totalBelanja').innerText = "Rp " + formatIDR(total - diskon);
+            document.getElementById('totalBelanja').innerText = "Rp " + formatIDR(Math.max(0, total - diskon));
             hitungKembali();
         }
 
@@ -175,7 +223,6 @@
         function showSection(id) {
             document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
             document.getElementById('nav-' + id).classList.add('active');
-            // Logika pindah section bisa ditambahkan di sini
         }
     </script>
 </body>
