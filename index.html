@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>AMALIA POS PRO</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
@@ -10,63 +10,60 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
 <style>
-body{background:#020617;color:#fff;font-family:sans-serif}
-.glass{background:rgba(30,41,59,.5);backdrop-filter:blur(10px)}
+body{margin:0;background:#020617;color:#f8fafc;font-family:sans-serif;height:100vh;display:flex;flex-direction:column}
+.glass{background:rgba(30,41,59,.5);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.08)}
+input{background:#0f172a;color:white;border-radius:12px;padding:12px}
 </style>
 </head>
 
-<body class="h-screen flex flex-col">
+<body>
 
-<!-- LOGIN -->
-<div id="login" class="fixed inset-0 flex items-center justify-center bg-black">
-  <div class="glass p-6 rounded-xl w-72 text-center">
+<div id="login" class="fixed inset-0 flex items-center justify-center bg-black z-50">
+  <div class="glass p-6 rounded-2xl w-72 text-center">
     <h1 class="text-2xl font-black text-blue-500 mb-4">AMALIA POS</h1>
-    <input id="nama" placeholder="Nama Petugas" class="w-full mb-3 p-3 rounded bg-slate-800 text-center">
+    <input id="namaUser" placeholder="NAMA PETUGAS" class="w-full mb-3 text-center">
     <div class="grid grid-cols-2 gap-2">
-      <button onclick="login('Kasir')" class="bg-slate-700 p-3 rounded">Kasir</button>
-      <button onclick="login('Admin')" class="bg-blue-600 p-3 rounded">Admin</button>
+      <button onclick="login('Kasir')" class="bg-slate-700 p-3 rounded-xl">KASIR</button>
+      <button onclick="login('Admin')" class="bg-blue-600 p-3 rounded-xl">ADMIN</button>
     </div>
   </div>
 </div>
 
-<!-- HEADER -->
 <header class="glass p-4 flex justify-between items-center">
   <div>
-    <p id="user" class="font-bold"></p>
-    <p id="role" class="text-xs text-blue-400"></p>
+    <p id="userInfo" class="font-bold text-sm"></p>
+    <p id="roleInfo" class="text-xs text-blue-400"></p>
   </div>
   <button onclick="location.reload()" class="text-red-500 text-xl">✕</button>
 </header>
 
-<!-- MAIN -->
-<main class="flex-1 overflow-hidden">
+<main class="flex-1 overflow-hidden p-4">
 
-<!-- KASIR -->
-<section id="kasir" class="p-4">
-  <input id="cari" oninput="search(this.value)" placeholder="Cari produk..." class="w-full p-3 rounded bg-slate-800 mb-2">
+<input id="search" oninput="searchBarang(this.value)" placeholder="Cari produk..." class="w-full mb-2">
 
-  <div id="hasil" class="glass rounded mb-3 hidden"></div>
+<div id="dropdown" class="glass rounded-xl mb-3 hidden"></div>
 
-  <table class="w-full text-sm">
-    <tbody id="cart"></tbody>
-  </table>
+<table class="w-full text-sm mb-4">
+  <tbody id="cartTable"></tbody>
+</table>
 
-  <div class="mt-4 glass p-4 rounded">
-    <p>Total</p>
-    <h1 id="total" class="text-2xl font-black">Rp 0</h1>
+<div class="glass p-4 rounded-xl">
+  <p class="text-xs uppercase">Total</p>
+  <h1 id="totalText" class="text-2xl font-black">Rp 0</h1>
 
-    <input id="diskon" oninput="format(this);renderCart()" placeholder="Diskon" class="w-full p-3 rounded bg-slate-800 mt-2">
-    <input id="bayar" oninput="format(this);hitungKembali()" placeholder="Bayar" class="w-full p-3 rounded bg-slate-800 mt-2">
+  <input id="diskon" oninput="formatInput(this);renderCart()" placeholder="Diskon" class="w-full mt-2">
+  <input id="bayar" oninput="formatInput(this);hitungKembali()" placeholder="Bayar" class="w-full mt-2">
 
-    <p class="mt-2">Kembali: <span id="kembali">Rp 0</span></p>
-    <button onclick="selesai()" class="w-full bg-blue-600 p-3 rounded mt-3 font-bold">SELESAI</button>
-  </div>
-</section>
+  <p class="mt-2 text-sm">Kembali: <span id="kembaliText">Rp 0</span></p>
+
+  <button onclick="selesai()" class="w-full bg-blue-600 h-12 rounded-xl font-bold mt-3">
+    SELESAI
+  </button>
+</div>
 
 </main>
 
 <script>
-/* FIREBASE */
 firebase.initializeApp({
  apiKey:"AIzaSyBhrN6vuBzuxwFgPI-iXJky6ErDz8auclY",
  authDomain:"toko4malia.firebaseapp.com",
@@ -74,89 +71,83 @@ firebase.initializeApp({
 });
 const db=firebase.firestore();
 
-/* DATA */
-let barang=[],cart=[],userRole="";
+let barang=[],cart=[];
 
-/* LOGIN */
 function login(role){
- const n=document.getElementById("nama").value;
- if(!n)return alert("Nama wajib");
- userRole=role;
- document.getElementById("login").style.display="none";
- document.getElementById("user").innerText=n;
- document.getElementById("role").innerText=role;
- loadData();
+ const n=namaUser.value;
+ if(!n)return;
+ login.style.display="none";
+ userInfo.innerText=n;
+ roleInfo.innerText=role;
+ loadBarang();
 }
 
-/* LOAD */
-function loadData(){
+function loadBarang(){
  db.collection("barang").onSnapshot(s=>{
   barang=s.docs.map(d=>({id:d.id,...d.data()}));
  });
 }
 
-/* SEARCH */
-function search(q){
- const h=document.getElementById("hasil");
- if(!q){h.classList.add("hidden");return}
- h.innerHTML=barang.filter(b=>b.nama.toLowerCase().includes(q.toLowerCase()))
+function searchBarang(q){
+ if(!q){dropdown.classList.add("hidden");return}
+ dropdown.innerHTML=barang.filter(b=>b.nama.toLowerCase().includes(q.toLowerCase()))
  .map(b=>`
-  <div class="p-3 border-b" onclick="add('${b.id}')">
-   <b>${b.nama}</b><br>Rp ${idr(b.ecer)}
-  </div>`).join("");
- h.classList.remove("hidden");
+  <div class="p-3 border-b border-white/10" onclick="addCart('${b.id}')">
+   <b>${b.nama}</b><br>
+   <span class="text-blue-400 text-xs">Rp ${idr(b.ecer)}</span>
+  </div>
+ `).join("");
+ dropdown.classList.remove("hidden");
 }
 
-/* CART */
-function add(id){
- const b=barang.find(x=>x.id==id);
- const c=cart.find(x=>x.id==id);
- if(c){if(c.qty>=b.stok)return alert("Stok habis");c.qty++}
- else cart.push({...b,qty:1});
- document.getElementById("hasil").classList.add("hidden");
- document.getElementById("cari").value="";
+function addCart(id){
+ const b=barang.find(x=>x.id===id);
+ let c=cart.find(x=>x.id===id);
+ if(c){if(c.qty>=b.stok)return;c.qty++}
+ else{if(b.stok<=0)return;cart.push({...b,qty:1})}
+ search.value="";
+ dropdown.classList.add("hidden");
  renderCart();
 }
 
 function renderCart(){
- let t=0;
- cart.forEach(i=>t+=i.qty*i.ecer);
- document.getElementById("cart").innerHTML=cart.map((i,x)=>`
- <tr>
-  <td>${i.nama} (${i.qty})</td>
-  <td class="text-right">Rp ${idr(i.qty*i.ecer)}</td>
-  <td onclick="cart.splice(${x},1);renderCart()" class="text-red-500">✕</td>
- </tr>`).join("");
- const d=num("diskon");
- document.getElementById("total").innerText="Rp "+idr(t-d);
+ let total=0;
+ cartTable.innerHTML=cart.map((i,x)=>{
+  const sub=i.qty*i.ecer;
+  total+=sub;
+  return`
+   <tr>
+    <td>${i.nama} (${i.qty})</td>
+    <td class="text-right">Rp ${idr(sub)}</td>
+    <td class="text-red-500 cursor-pointer" onclick="cart.splice(${x},1);renderCart()">✕</td>
+   </tr>`;
+ }).join("");
+ const d=num(diskon.value);
+ totalText.innerText="Rp "+idr(total-d);
  hitungKembali();
 }
 
-/* HITUNG */
 function hitungKembali(){
- const total=numText("total");
- const bayar=num("bayar");
- document.getElementById("kembali").innerText="Rp "+idr(bayar-total);
+ const total=numText(totalText.innerText);
+ const b=num(bayar.value);
+ kembaliText.innerText="Rp "+idr(b-total);
 }
 
-/* SELESAI */
 function selesai(){
- if(!cart.length)return alert("Kosong");
+ if(!cart.length)return;
  db.collection("transaksi").add({
   waktu:new Date(),
   item:cart,
-  total:numText("total")
+  total:numText(totalText.innerText)
  });
  cart=[];
  renderCart();
- alert("Transaksi berhasil");
 }
 
-/* UTIL */
 function idr(n){return new Intl.NumberFormat("id-ID").format(n||0)}
-function num(id){return Number(document.getElementById(id).value.replace(/\./g,""))||0}
-function numText(id){return Number(document.getElementById(id).innerText.replace(/\D/g,""))}
-function format(el){el.value=idr(num(el.id))}
+function num(v){return Number(v.replace(/\./g,""))||0}
+function numText(t){return Number(t.replace(/\D/g,""))||0}
+function formatInput(el){el.value=idr(num(el.value))}
 </script>
 
 </body>
