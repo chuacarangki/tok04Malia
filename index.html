@@ -18,13 +18,14 @@ input{background:#0f172a;color:white;border-radius:12px;padding:12px}
 
 <body>
 
-<div id="login" class="fixed inset-0 flex items-center justify-center bg-black z-50">
+<!-- LOGIN -->
+<div id="loginPage" class="fixed inset-0 flex items-center justify-center bg-black z-50">
   <div class="glass p-6 rounded-2xl w-72 text-center">
     <h1 class="text-2xl font-black text-blue-500 mb-4">AMALIA POS</h1>
     <input id="namaUser" placeholder="NAMA PETUGAS" class="w-full mb-3 text-center">
     <div class="grid grid-cols-2 gap-2">
-      <button onclick="login('Kasir')" class="bg-slate-700 p-3 rounded-xl">KASIR</button>
-      <button onclick="login('Admin')" class="bg-blue-600 p-3 rounded-xl">ADMIN</button>
+      <button onclick="doLogin('Kasir')" class="bg-slate-700 p-3 rounded-xl">KASIR</button>
+      <button onclick="doLogin('Admin')" class="bg-blue-600 p-3 rounded-xl">ADMIN</button>
     </div>
   </div>
 </div>
@@ -73,33 +74,38 @@ const db=firebase.firestore();
 
 let barang=[],cart=[];
 
-function login(role){
- const n=namaUser.value;
+/* LOGIN */
+function doLogin(role){
+ const n=document.getElementById("namaUser").value;
  if(!n)return;
- login.style.display="none";
- userInfo.innerText=n;
- roleInfo.innerText=role;
+ document.getElementById("loginPage").style.display="none";
+ document.getElementById("userInfo").innerText=n;
+ document.getElementById("roleInfo").innerText=role;
  loadBarang();
 }
 
+/* LOAD BARANG */
 function loadBarang(){
  db.collection("barang").onSnapshot(s=>{
   barang=s.docs.map(d=>({id:d.id,...d.data()}));
  });
 }
 
+/* SEARCH */
 function searchBarang(q){
- if(!q){dropdown.classList.add("hidden");return}
- dropdown.innerHTML=barang.filter(b=>b.nama.toLowerCase().includes(q.toLowerCase()))
+ const d=document.getElementById("dropdown");
+ if(!q){d.classList.add("hidden");return}
+ d.innerHTML=barang.filter(b=>b.nama.toLowerCase().includes(q.toLowerCase()))
  .map(b=>`
   <div class="p-3 border-b border-white/10" onclick="addCart('${b.id}')">
    <b>${b.nama}</b><br>
    <span class="text-blue-400 text-xs">Rp ${idr(b.ecer)}</span>
   </div>
  `).join("");
- dropdown.classList.remove("hidden");
+ d.classList.remove("hidden");
 }
 
+/* CART */
 function addCart(id){
  const b=barang.find(x=>x.id===id);
  let c=cart.find(x=>x.id===id);
@@ -144,6 +150,7 @@ function selesai(){
  renderCart();
 }
 
+/* UTIL */
 function idr(n){return new Intl.NumberFormat("id-ID").format(n||0)}
 function num(v){return Number(v.replace(/\./g,""))||0}
 function numText(t){return Number(t.replace(/\D/g,""))||0}
