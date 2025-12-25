@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AMALIA POS - Simple Mode</title>
+    <title>AMALIA POS - STABLE VERSION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -11,58 +11,81 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .custom-scroll { overflow-y: auto; }
-        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; outline: none; }
-        #dropdownSearch { position: absolute; width: 100%; top: 60px; z-index: 100; background: #1e293b; border-radius: 8px; max-height: 300px; overflow-y: auto; }
+        .nav-btn { flex: 1; padding: 10px; font-size: 10px; font-weight: 800; color: #64748b; text-align: center; }
+        .nav-btn.active { color: #3b82f6; border-top: 2px solid #3b82f6; }
+        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; outline: none; }
+        #dropdownSearch { position: absolute; width: 100%; top: 60px; z-index: 100; background: #1e293b; border-radius: 12px; max-height: 40vh; overflow-y: auto; border: 1px solid #3b82f6; }
     </style>
 </head>
 <body>
+
+    <div id="print-area" class="hidden"></div>
 
     <div id="login-page" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6">
         <div class="glass-card p-8 rounded-3xl w-full max-w-xs text-center">
             <h1 class="text-3xl font-black text-blue-500 mb-6 italic">AMALIA</h1>
             <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="w-full mb-4 uppercase font-bold text-center">
-            <button onclick="login()" class="w-full bg-blue-600 h-12 rounded-xl font-bold">MASUK KASIR</button>
+            <button onclick="login()" class="w-full bg-blue-600 h-12 rounded-xl font-bold">MASUK SISTEM</button>
         </div>
     </div>
 
     <header class="p-4 glass-card flex justify-between items-center">
         <h1 class="font-black italic text-blue-500">AMALIA STORE</h1>
-        <div id="user-display" class="text-[10px] font-bold uppercase"></div>
+        <div id="user-display" class="text-[10px] font-bold uppercase text-slate-400"></div>
     </header>
 
-    <main class="flex-grow flex flex-col p-3 overflow-hidden relative">
-        <div class="relative mb-3">
-            <input type="text" id="inCari" oninput="cariBarang(this.value)" placeholder="Cari Nama Produk..." class="w-full h-12 text-sm font-bold">
-            <div id="dropdownSearch" class="hidden shadow-2xl"></div>
-        </div>
-
-        <div class="flex-grow glass-card rounded-xl overflow-hidden flex flex-col">
-            <div class="custom-scroll flex-grow">
+    <main id="main-content" class="flex-grow overflow-hidden relative">
+        
+        <section id="sec-kasir" class="p-3 h-full flex flex-col">
+            <div class="relative mb-3">
+                <input type="text" id="inCari" oninput="cariBarang(this.value)" placeholder="Cari Nama Produk..." class="w-full h-14 text-sm font-bold">
+                <div id="dropdownSearch" class="hidden shadow-2xl"></div>
+            </div>
+            <div class="flex-grow glass-card rounded-xl overflow-y-auto mb-3">
                 <table class="w-full text-xs">
                     <thead class="bg-slate-800 sticky top-0">
-                        <tr><th class="p-3 text-left">ITEM</th><th class="p-3 text-center">QTY</th><th class="p-3 text-right">TOTAL</th></tr>
+                        <tr><th class="p-3 text-left">ITEM</th><th class="p-3 text-center">QTY</th><th class="p-3 text-right">SUB</th></tr>
                     </thead>
                     <tbody id="tabelKasir"></tbody>
                 </table>
             </div>
-        </div>
-
-        <div class="mt-3 space-y-2">
-            <div class="glass-card p-4 rounded-xl bg-blue-900/30">
-                <p class="text-[10px] font-bold uppercase opacity-60">Total Belanja</p>
-                <h1 id="totalHarga" class="text-3xl font-black">0</h1>
+            <div class="glass-card p-4 rounded-xl space-y-3">
+                <div class="flex justify-between items-end">
+                    <div><p class="text-[10px] font-bold text-slate-400">TOTAL</p><h1 id="totalHarga" class="text-3xl font-black">Rp 0</h1></div>
+                    <div class="text-right"><p class="text-[10px] font-bold text-slate-400">KEMBALI</p><h1 id="kembalian" class="text-xl font-black text-green-400">Rp 0</h1></div>
+                </div>
+                <input type="number" id="bayarTunai" oninput="hitungKembali()" placeholder="INPUT PEMBAYARAN" class="w-full h-12 font-bold text-lg border-blue-500/50">
+                <button onclick="prosesSimpan()" class="w-full bg-blue-600 h-14 rounded-xl font-black text-lg shadow-lg">SIMPAN & SELESAI</button>
             </div>
-            <div class="grid grid-cols-2 gap-2">
-                <input type="number" id="bayarTunai" oninput="hitungKembali()" placeholder="UANG BAYAR" class="h-12 font-bold text-lg">
-                <div class="glass-card flex items-center justify-center rounded-lg">
-                    <span class="text-[10px] mr-2">KEMBALI:</span>
-                    <span id="kembalian" class="font-bold text-green-400">0</span>
+        </section>
+
+        <section id="sec-history" class="hidden p-4 h-full overflow-y-auto">
+            <h2 class="font-bold mb-4">RIWAYAT TRANSAKSI</h2>
+            <div id="history-list" class="space-y-3 pb-20"></div>
+        </section>
+
+        <section id="sec-laporan" class="hidden p-4 h-full overflow-y-auto">
+            <h2 class="font-bold mb-4">LAPORAN PENJUALAN</h2>
+            <div class="grid grid-cols-2 gap-3 mb-6">
+                <div class="glass-card p-4 rounded-xl">
+                    <p class="text-[10px] font-bold text-blue-400">TOTAL OMZET</p>
+                    <h1 id="lap-omzet" class="text-lg font-black">Rp 0</h1>
+                </div>
+                <div class="glass-card p-4 rounded-xl">
+                    <p class="text-[10px] font-bold text-slate-400">TOTAL TRX</p>
+                    <h1 id="lap-count" class="text-lg font-black">0</h1>
                 </div>
             </div>
-            <button onclick="prosesSimpan()" class="w-full bg-blue-600 h-14 rounded-xl font-black text-lg">SIMPAN TRANSAKSI</button>
-        </div>
+        </section>
+
     </main>
+
+    <nav class="h-16 glass-card flex items-center border-t border-white/5">
+        <div onclick="showSection('kasir')" id="nav-kasir" class="nav-btn active">🛒<br>KASIR</div>
+        <div onclick="showSection('history')" id="nav-history" class="nav-btn">🕒<br>HISTORY</div>
+        <div onclick="showSection('laporan')" id="nav-laporan" class="nav-btn">📊<br>LAPORAN</div>
+        <div onclick="location.reload()" class="nav-btn text-red-500">❌<br>KELUAR</div>
+    </nav>
 
     <script>
         const config = {
@@ -76,21 +99,45 @@
         firebase.initializeApp(config);
         const db = firebase.firestore();
 
-        let dataBarang = [], keranjang = [], userSekarang = '';
+        let dataBarang = [], dataTransaksi = [], keranjang = [], userSekarang = '';
+
+        // Format Rupiah Standar (Tanpa merusak angka)
+        function formatIDR(n) {
+            return "Rp " + (Number(n) || 0).toLocaleString('id-ID');
+        }
 
         function login() {
             const n = document.getElementById('inNamaUser').value;
-            if(!n) return alert("Isi Nama!");
+            if(!n) return alert("Masukkan Nama!");
             userSekarang = n;
             document.getElementById('login-page').style.display = 'none';
             document.getElementById('user-display').innerText = n;
-            loadBarang();
+            syncAll();
         }
 
-        function loadBarang() {
+        function syncAll() {
+            // Load Barang
             db.collection("barang").onSnapshot(snap => {
-                dataBarang = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                dataBarang = snap.docs.map(d => ({ 
+                    id: d.id, 
+                    nama: d.data().nama, 
+                    ecer: Number(d.data().ecer) || 0, 
+                    stok: Number(d.data().stok) || 0 
+                }));
             });
+            // Load Transaksi
+            db.collection("transaksi").orderBy("waktu", "desc").limit(50).onSnapshot(snap => {
+                dataTransaksi = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+                renderHistory();
+                renderLaporan();
+            });
+        }
+
+        function showSection(id) {
+            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('sec-' + id).classList.remove('hidden');
+            document.getElementById('nav-' + id).classList.add('active');
         }
 
         function cariBarang(q) {
@@ -99,12 +146,12 @@
             
             const hasil = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
             drop.innerHTML = hasil.map(b => `
-                <div onclick="tambahItem('${b.id}')" class="p-4 border-b border-white/5 flex justify-between">
+                <div onclick="tambahItem('${b.id}')" class="p-4 border-b border-white/5 flex justify-between items-center active:bg-blue-600">
                     <div>
                         <div class="font-bold uppercase text-sm">${b.nama}</div>
-                        <div class="text-blue-400 text-xs">Harga: ${b.ecer}</div>
+                        <div class="text-blue-400 text-xs font-bold">${formatIDR(b.ecer)}</div>
                     </div>
-                    <div class="text-[10px] bg-yellow-500 text-black px-2 py-1 rounded h-fit">Stok: ${b.stok}</div>
+                    <div class="text-[10px] bg-yellow-500 text-black px-2 py-1 rounded font-bold">STOK: ${b.stok}</div>
                 </div>
             `).join('');
             drop.classList.remove('hidden');
@@ -113,72 +160,70 @@
         function tambahItem(id) {
             const b = dataBarang.find(x => x.id === id);
             const ada = keranjang.find(k => k.id === id);
-            
-            if(ada) {
-                ada.qty++;
-            } else {
-                keranjang.push({ id: b.id, nama: b.nama, ecer: Number(b.ecer), qty: 1 });
-            }
-            
+            if(ada) { ada.qty++; } 
+            else { keranjang.push({ id: b.id, nama: b.nama, ecer: b.ecer, qty: 1 }); }
             document.getElementById('inCari').value = '';
             document.getElementById('dropdownSearch').classList.add('hidden');
-            updateTabel();
+            renderKeranjang();
         }
 
-        function updateTabel() {
+        function renderKeranjang() {
             const tbody = document.getElementById('tabelKasir');
             let total = 0;
-            
             tbody.innerHTML = keranjang.map((k, i) => {
                 const sub = k.qty * k.ecer;
                 total += sub;
                 return `
                     <tr class="border-b border-white/5">
-                        <td class="p-3 uppercase font-bold">${k.nama}<br><span class="text-[9px] font-normal opacity-50">@${k.ecer}</span></td>
+                        <td class="p-3"><p class="font-bold uppercase">${k.nama}</p><p class="opacity-50 text-[10px]">${formatIDR(k.ecer)}</p></td>
                         <td class="p-3 text-center">
-                            <button onclick="ubahQty(${i},-1)" class="px-2 bg-slate-700 rounded">-</button>
-                            <span class="mx-2">${k.qty}</span>
-                            <button onclick="ubahQty(${i},1)" class="px-2 bg-blue-600 rounded">+</button>
+                            <div class="flex justify-center items-center gap-2">
+                                <button onclick="ubahQty(${i},-1)" class="w-6 h-6 bg-slate-700 rounded">-</button>
+                                <span class="font-bold">${k.qty}</span>
+                                <button onclick="ubahQty(${i},1)" class="w-6 h-6 bg-blue-600 rounded">+</button>
+                            </div>
                         </td>
-                        <td class="p-3 text-right font-bold">${sub}</td>
+                        <td class="p-3 text-right font-bold">${formatIDR(sub)}</td>
                     </tr>
                 `;
             }).join('');
-            
-            document.getElementById('totalHarga').innerText = total;
+            document.getElementById('totalHarga').innerText = formatIDR(total);
             hitungKembali();
         }
 
         function ubahQty(i, n) {
             keranjang[i].qty += n;
             if(keranjang[i].qty <= 0) keranjang.splice(i, 1);
-            updateTabel();
+            renderKeranjang();
         }
 
         function hitungKembali() {
-            const t = Number(document.getElementById('totalHarga').innerText);
-            const b = Number(document.getElementById('bayarTunai').value);
-            document.getElementById('kembalian').innerText = b - t;
+            const totalStr = document.getElementById('totalHarga').innerText.replace(/[^0-9]/g, '');
+            const total = Number(totalStr);
+            const bayar = Number(document.getElementById('bayarTunai').value) || 0;
+            document.getElementById('kembalian').innerText = formatIDR(Math.max(0, bayar - total));
         }
 
         async function prosesSimpan() {
-            const t = Number(document.getElementById('totalHarga').innerText);
-            const b = Number(document.getElementById('bayarTunai').value);
+            const total = Number(document.getElementById('totalHarga').innerText.replace(/[^0-9]/g, ''));
+            const bayar = Number(document.getElementById('bayarTunai').value) || 0;
             
-            if(t <= 0) return alert("Keranjang Kosong!");
-            if(b < t) return alert("Uang Kurang!");
+            if(total <= 0) return alert("Keranjang Kosong!");
+            if(bayar < total) return alert("Uang Kurang!");
 
             try {
                 const batch = db.batch();
                 const ref = db.collection("transaksi").doc();
-                
-                batch.set(ref, {
+                const dataSimpan = {
+                    idTrx: "TRX-" + Date.now().toString().slice(-6),
                     waktu: Date.now(),
                     items: keranjang,
-                    total: t,
+                    total: total,
+                    bayar: bayar,
                     kasir: userSekarang
-                });
-
+                };
+                
+                batch.set(ref, dataSimpan);
                 keranjang.forEach(k => {
                     batch.update(db.collection("barang").doc(k.id), {
                         stok: firebase.firestore.FieldValue.increment(-k.qty)
@@ -186,13 +231,33 @@
                 });
 
                 await batch.commit();
-                alert("TRANSAKSI BERHASIL DISIMPAN!");
+                alert("SUKSES!");
                 keranjang = [];
                 document.getElementById('bayarTunai').value = '';
-                updateTabel();
-            } catch(e) {
-                alert("Gagal Simpan Database!");
-            }
+                renderKeranjang();
+            } catch(e) { alert("EROR SIMPAN!"); }
+        }
+
+        function renderHistory() {
+            const list = document.getElementById('history-list');
+            list.innerHTML = dataTransaksi.map(t => `
+                <div class="glass-card p-4 rounded-xl flex justify-between items-center border-l-4 border-blue-500">
+                    <div>
+                        <p class="text-[10px] font-bold text-blue-400">${t.idTrx || 'TRX'}</p>
+                        <p class="text-xs font-bold uppercase">${new Date(t.waktu).toLocaleTimeString()}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-black text-white">${formatIDR(t.total)}</p>
+                        <p class="text-[8px] opacity-50 uppercase">Ksr: ${t.kasir}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLaporan() {
+            const total = dataTransaksi.reduce((sum, t) => sum + (Number(t.total) || 0), 0);
+            document.getElementById('lap-omzet').innerText = formatIDR(total);
+            document.getElementById('lap-count').innerText = dataTransaksi.length;
         }
     </script>
 </body>
