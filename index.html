@@ -3,160 +3,66 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AMALIA POS PRO - Final Stable</title>
+    <title>AMALIA POS - Simple Mode</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
     <style>
-        :root { --accent: #3b82f6; --bg: #020617; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg); color: #f8fafc; height: 100vh; display: flex; flex-direction: column; overflow: hidden; margin: 0; }
-        .glass-card { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.08); }
-        .font-mono-price { font-family: 'JetBrains Mono', monospace; }
-        .custom-scroll { overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(59, 130, 246, 0.3) transparent; }
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.3); border-radius: 10px; }
-        .badge-stok { background: #facc15; color: #000; padding: 2px 8px; border-radius: 6px; font-weight: 800; font-size: 10px; }
-        .badge-stok-low { background: #ef4444; color: white; }
-        .nav-btn { transition: 0.3s; color: #94a3b8; font-weight: 700; display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; font-size: 10px; }
-        .nav-btn.active { color: #3b82f6; }
-        #toast { position: fixed; top: 20%; left: 50%; transform: translate(-50%, -50%) scale(0.5); z-index: 9999; opacity: 0; visibility: hidden; transition: 0.4s; width: 90%; max-width: 320px; }
-        #toast.show { opacity: 1; visibility: visible; transform: translate(-50%, -50%) scale(1); }
-        input { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255,255,255,0.15); color: white; outline: none; padding: 0 16px; min-height: 48px; border-radius: 12px; }
-        @media (max-width: 768px) {
-            .section-page { height: calc(100vh - 64px); padding-bottom: 20px; }
-            #dropdownSearch { position: fixed; top: 135px; left: 12px; right: 12px; z-index: 9999; max-height: 50vh; background: #0f172a; border: 2px solid #3b82f6; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8); border-radius: 16px; }
-        }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .custom-scroll { overflow-y: auto; }
+        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 10px; border-radius: 8px; outline: none; }
+        #dropdownSearch { position: absolute; width: 100%; top: 60px; z-index: 100; background: #1e293b; border-radius: 8px; max-height: 300px; overflow-y: auto; }
     </style>
 </head>
 <body>
 
-    <div id="print-area" class="hidden font-mono text-[10px] w-[58mm]"></div>
-
-    <div id="toast">
-        <div id="toast-inner" class="glass-card px-6 py-4 rounded-2xl border-t-4 border-blue-500 shadow-2xl text-center">
-            <div id="toast-text" class="text-xs font-black uppercase text-white"></div>
-        </div>
-    </div>
-
     <div id="login-page" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6">
-        <div class="glass-card p-8 rounded-[40px] w-full max-w-xs text-center">
-            <h1 class="text-4xl font-black italic text-blue-500 mb-1">AMALIA</h1>
-            <p class="text-[8px] font-bold text-slate-500 uppercase tracking-[0.3em] mb-8">Point of Sale</p>
-            <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="w-full text-center font-black uppercase mb-4">
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="attemptLogin('Kasir')" class="bg-white/5 h-12 rounded-xl font-bold text-[10px] uppercase">KASIR</button>
-                <button onclick="attemptLogin('Admin')" class="bg-blue-600 h-12 rounded-xl font-bold text-[10px] uppercase">ADMIN</button>
-            </div>
+        <div class="glass-card p-8 rounded-3xl w-full max-w-xs text-center">
+            <h1 class="text-3xl font-black text-blue-500 mb-6 italic">AMALIA</h1>
+            <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="w-full mb-4 uppercase font-bold text-center">
+            <button onclick="login()" class="w-full bg-blue-600 h-12 rounded-xl font-bold">MASUK KASIR</button>
         </div>
     </div>
 
-    <header class="p-4 flex justify-between items-center glass-card border-b border-white/5 z-[60]">
-        <div class="flex items-center gap-2">
-            <div class="w-7 h-7 bg-blue-600 rounded flex items-center justify-center font-black italic text-white text-sm">A</div>
-            <h1 class="text-sm font-black italic text-white uppercase tracking-tighter">Amalia Store</h1>
-        </div>
-        <div class="flex items-center gap-3">
-            <div class="text-right">
-                <p id="user-info" class="text-[9px] font-black uppercase text-white leading-none"></p>
-                <p id="role-info" class="text-[7px] font-bold text-blue-500 uppercase"></p>
-            </div>
-            <button onclick="location.reload()" class="text-red-500 font-bold text-lg px-2">✕</button>
-        </div>
+    <header class="p-4 glass-card flex justify-between items-center">
+        <h1 class="font-black italic text-blue-500">AMALIA STORE</h1>
+        <div id="user-display" class="text-[10px] font-bold uppercase"></div>
     </header>
 
-    <main id="main-container" class="flex-grow overflow-hidden relative">
-        <div id="sec-kasir" class="section-page h-full flex flex-col lg:flex-row">
-            <div class="flex-grow flex flex-col p-3 overflow-hidden">
-                <div class="relative mb-3 z-[70]">
-                    <input type="text" id="inCari" oninput="searchBarang(this.value)" placeholder="Cari Nama Produk..." class="w-full font-bold text-sm h-14">
-                    <div id="dropdownSearch" class="glass-card mt-1 overflow-y-auto custom-scroll hidden"></div>
-                </div>
-                <div class="glass-card rounded-2xl flex-grow flex flex-col overflow-hidden">
-                    <div class="overflow-y-auto flex-grow custom-scroll">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-900/90 sticky top-0 text-[10px] font-bold uppercase text-slate-500 z-10">
-                                <tr><th class="p-3">Item</th><th class="p-3 text-center">Qty</th><th class="p-3 text-right">Sub</th><th class="p-3"></th></tr>
-                            </thead>
-                            <tbody id="tabelKasir" class="divide-y divide-white/5"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
+    <main class="flex-grow flex flex-col p-3 overflow-hidden relative">
+        <div class="relative mb-3">
+            <input type="text" id="inCari" oninput="cariBarang(this.value)" placeholder="Cari Nama Produk..." class="w-full h-12 text-sm font-bold">
+            <div id="dropdownSearch" class="hidden shadow-2xl"></div>
+        </div>
 
-            <div id="side-panel" class="w-full lg:w-80 p-3 glass-card border-t border-white/10 flex flex-col gap-3 shrink-0">
-                <div class="bg-gradient-to-br from-blue-600 to-blue-800 p-4 rounded-xl shadow-lg">
-                    <p class="text-[10px] font-bold uppercase opacity-70">Total Bayar</p>
-                    <h1 id="totalBelanja" class="text-3xl font-black font-mono-price tracking-tighter">Rp 0</h1>
-                </div>
-                <div class="space-y-3">
-                    <div class="relative">
-                        <label class="absolute left-4 top-2 text-[10px] font-bold text-orange-400 uppercase">Diskon</label>
-                        <input type="text" id="diskonManual" oninput="formatMoneyInput(this); renderCart()" class="w-full pt-6 pb-2 text-lg font-bold text-orange-400" placeholder="0">
-                    </div>
-                    <div class="relative">
-                        <label class="absolute left-4 top-2 text-[10px] font-bold text-blue-400 uppercase">Bayar Tunai</label>
-                        <input type="text" id="bayarTunai" oninput="formatMoneyInput(this); hitungKembali()" class="w-full pt-6 pb-2 text-xl font-black text-white" placeholder="0">
-                    </div>
-                </div>
-                <div class="p-3 bg-slate-900/50 rounded-xl flex justify-between items-center border border-white/5">
-                    <span class="text-[10px] text-slate-500 font-bold uppercase">Kembali</span>
-                    <span id="kembalianText" class="text-lg font-black text-green-400 font-mono-price">Rp 0</span>
-                </div>
-                <button onclick="prosesBayar()" class="w-full bg-blue-600 h-16 rounded-2xl font-black text-lg uppercase shadow-xl active:scale-95 transition-all">Selesaikan Transaksi</button>
+        <div class="flex-grow glass-card rounded-xl overflow-hidden flex flex-col">
+            <div class="custom-scroll flex-grow">
+                <table class="w-full text-xs">
+                    <thead class="bg-slate-800 sticky top-0">
+                        <tr><th class="p-3 text-left">ITEM</th><th class="p-3 text-center">QTY</th><th class="p-3 text-right">TOTAL</th></tr>
+                    </thead>
+                    <tbody id="tabelKasir"></tbody>
+                </table>
             </div>
         </div>
 
-        <div id="sec-history" class="section-page hidden h-full overflow-y-auto p-4"><div class="max-w-md mx-auto space-y-3" id="history-list"></div></div>
-        <div id="sec-laporan" class="section-page hidden h-full overflow-y-auto p-4"><div class="max-w-md mx-auto space-y-4" id="lap-content"></div></div>
-
-        <div id="sec-admin" class="section-page hidden h-full overflow-y-auto p-4">
-            <div class="max-w-md mx-auto space-y-6">
-                <div class="glass-card p-5 rounded-2xl">
-                    <h2 class="text-xs font-black uppercase mb-4 text-blue-400 italic">Database Produk</h2>
-                    <div class="grid grid-cols-1 gap-3">
-                        <input type="text" id="admNama" placeholder="NAMA BARANG" class="w-full font-black uppercase">
-                        <div class="grid grid-cols-2 gap-2">
-                            <input type="text" id="admEcer" oninput="formatMoneyInput(this)" placeholder="HARGA JUAL" class="w-full font-mono-price">
-                            <input type="number" id="admStok" placeholder="STOK" class="w-full font-bold">
-                        </div>
-                        <button onclick="simpanBarang()" class="w-full bg-blue-600 h-12 rounded-xl font-bold uppercase">Tambah ke Database</button>
-                    </div>
-                </div>
-                <div class="glass-card rounded-2xl overflow-hidden">
-                    <div class="p-3 border-b border-white/5"><input type="text" oninput="renderAdminTable(this.value)" placeholder="Cari di database..." class="w-full uppercase text-xs"></div>
-                    <div class="overflow-x-auto"><table class="w-full text-[10px]"><tbody id="tabelAdmin" class="divide-y divide-white/5"></tbody></table></div>
+        <div class="mt-3 space-y-2">
+            <div class="glass-card p-4 rounded-xl bg-blue-900/30">
+                <p class="text-[10px] font-bold uppercase opacity-60">Total Belanja</p>
+                <h1 id="totalHarga" class="text-3xl font-black">0</h1>
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+                <input type="number" id="bayarTunai" oninput="hitungKembali()" placeholder="UANG BAYAR" class="h-12 font-bold text-lg">
+                <div class="glass-card flex items-center justify-center rounded-lg">
+                    <span class="text-[10px] mr-2">KEMBALI:</span>
+                    <span id="kembalian" class="font-bold text-green-400">0</span>
                 </div>
             </div>
+            <button onclick="prosesSimpan()" class="w-full bg-blue-600 h-14 rounded-xl font-black text-lg">SIMPAN TRANSAKSI</button>
         </div>
     </main>
-
-    <nav id="main-nav" class="hidden glass-card border-t border-white/10 h-16 flex items-center justify-around z-[100]">
-        <button id="nav-kasir" onclick="showSection('kasir')" class="nav-btn active"><span>🛒</span><span>KASIR</span></button>
-        <button id="nav-history" onclick="showSection('history')" class="nav-btn"><span>🕒</span><span>HISTORY</span></button>
-        <button id="nav-laporan" onclick="showSection('laporan')" class="nav-btn"><span>📊</span><span>LAPORAN</span></button>
-        <button id="nav-admin" onclick="showSection('admin')" class="nav-btn hidden !text-orange-400"><span>⚙️</span><span>ADMIN</span></button>
-    </nav>
-
-    <div id="modal-pass" class="fixed inset-0 z-[1001] bg-black/95 hidden items-center justify-center p-6 backdrop-blur-md">
-        <div class="glass-card p-8 rounded-[35px] w-full max-w-xs text-center">
-            <h2 class="text-xs font-bold mb-4 text-white uppercase tracking-widest">Akses Admin</h2>
-            <input type="password" id="admin-pass-input" class="w-full mb-4 text-center text-3xl font-bold tracking-[0.5em]">
-            <button onclick="checkAdminPass()" class="w-full bg-blue-600 h-12 rounded-xl font-bold uppercase">Masuk</button>
-            <button onclick="closePassModal()" class="mt-4 text-[10px] text-slate-500 font-bold uppercase w-full">Kembali</button>
-        </div>
-    </div>
-
-    <div id="modal-print-confirm" class="fixed inset-0 z-[1010] bg-black/95 hidden items-center justify-center p-6">
-        <div class="glass-card p-8 rounded-[40px] w-full max-w-xs text-center">
-            <h2 class="text-xl font-black text-white uppercase mb-4">BERHASIL!</h2>
-            <p class="text-slate-400 font-bold text-xs mb-6 uppercase">Cetak Struk Transaksi?</p>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="handlePrintDecision(true)" class="bg-blue-600 h-12 rounded-2xl font-black uppercase">YA</button>
-                <button onclick="handlePrintDecision(false)" class="bg-white/5 h-12 rounded-2xl font-black uppercase">TIDAK</button>
-            </div>
-        </div>
-    </div>
 
     <script>
         const config = {
@@ -170,260 +76,123 @@
         firebase.initializeApp(config);
         const db = firebase.firestore();
 
-        let dataBarang = [], dataTransaksi = [], keranjang = [], userAktif = '', userRole = '';
+        let dataBarang = [], keranjang = [], userSekarang = '';
 
-        // --- SOLUSI PERMANEN HARGA ---
-        const formatIDR = (n) => {
-            const val = Math.round(Number(n)) || 0;
-            return val.toLocaleString('id-ID');
-        };
-        
-        const toNum = (val) => {
-            if (!val) return 0;
-            // Hanya ambil digit angka (0-9), abaikan titik, koma, atau Rp
-            const cleaned = val.toString().replace(/\D/g, '');
-            return parseInt(cleaned) || 0;
-        };
-
-        function formatMoneyInput(el) {
-            let v = toNum(el.value);
-            el.value = v === 0 ? "" : formatIDR(v);
-        }
-
-        function toast(msg) {
-            const t = document.getElementById('toast');
-            document.getElementById('toast-text').innerText = msg;
-            t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
-        }
-
-        function attemptLogin(role) {
-            const name = document.getElementById('inNamaUser').value;
-            if(!name) return toast("NAMA WAJIB DIISI!");
-            if(role === 'Admin') document.getElementById('modal-pass').classList.replace('hidden', 'flex');
-            else loginSuccess(name, 'Kasir');
-        }
-
-        function checkAdminPass() {
-            if(document.getElementById('admin-pass-input').value === '1212') {
-                loginSuccess(document.getElementById('inNamaUser').value, 'Admin');
-                closePassModal();
-            } else { toast("PIN SALAH!"); }
-        }
-
-        function loginSuccess(name, role) {
-            userAktif = name; userRole = role;
+        function login() {
+            const n = document.getElementById('inNamaUser').value;
+            if(!n) return alert("Isi Nama!");
+            userSekarang = n;
             document.getElementById('login-page').style.display = 'none';
-            document.getElementById('main-nav').classList.replace('hidden', 'flex');
-            document.getElementById('user-info').innerText = name;
-            document.getElementById('role-info').innerText = role;
-            if(role === 'Admin') document.getElementById('nav-admin').classList.remove('hidden');
-            showSection('kasir'); syncData();
+            document.getElementById('user-display').innerText = n;
+            loadBarang();
         }
 
-        function closePassModal() { document.getElementById('modal-pass').classList.replace('flex', 'hidden'); }
-
-        function syncData() {
+        function loadBarang() {
             db.collection("barang").onSnapshot(snap => {
-                dataBarang = snap.docs.map(d => {
-                    const itm = d.data();
-                    return { id: d.id, ...itm, ecer: toNum(itm.ecer), stok: Number(itm.stok) || 0 };
-                });
-                renderAdminTable();
-            });
-            db.collection("transaksi").orderBy("waktu", "desc").onSnapshot(snap => {
-                dataTransaksi = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderHistory(); updateLaporan();
+                dataBarang = snap.docs.map(d => ({ id: d.id, ...d.data() }));
             });
         }
 
-        function showSection(id) {
-            document.querySelectorAll('.section-page').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('sec-' + id).classList.remove('hidden');
-            document.getElementById('nav-' + id).classList.add('active');
-        }
-
-        function searchBarang(q) {
+        function cariBarang(q) {
             const drop = document.getElementById('dropdownSearch');
-            if(!q) { drop.classList.add('hidden'); return; }
-            const filtered = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
+            if(!q) return drop.classList.add('hidden');
             
-            drop.innerHTML = filtered.map(b => `
-                <div onclick="addToCart('${b.id}')" class="p-4 border-b border-white/5 flex justify-between items-center active:bg-blue-600">
+            const hasil = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
+            drop.innerHTML = hasil.map(b => `
+                <div onclick="tambahItem('${b.id}')" class="p-4 border-b border-white/5 flex justify-between">
                     <div>
-                        <p class="text-sm font-bold uppercase text-white">${b.nama}</p>
-                        <p class="text-xs text-blue-400 font-mono-price font-bold">Rp ${formatIDR(b.ecer)}</p>
+                        <div class="font-bold uppercase text-sm">${b.nama}</div>
+                        <div class="text-blue-400 text-xs">Harga: ${b.ecer}</div>
                     </div>
-                    <span class="badge-stok ${b.stok < 5 ? 'badge-stok-low' : ''}">${b.stok}</span>
+                    <div class="text-[10px] bg-yellow-500 text-black px-2 py-1 rounded h-fit">Stok: ${b.stok}</div>
                 </div>
             `).join('');
             drop.classList.remove('hidden');
         }
 
-        function addToCart(id) {
-            const item = dataBarang.find(b => b.id === id);
-            const inCart = keranjang.find(k => k.id === id);
-            if(inCart) {
-                if(inCart.qty >= item.stok) return toast("STOK TIDAK CUKUP!");
-                inCart.qty++;
+        function tambahItem(id) {
+            const b = dataBarang.find(x => x.id === id);
+            const ada = keranjang.find(k => k.id === id);
+            
+            if(ada) {
+                ada.qty++;
             } else {
-                if(item.stok <= 0) return toast("STOK KOSONG!");
-                keranjang.push({ ...item, qty: 1 });
+                keranjang.push({ id: b.id, nama: b.nama, ecer: Number(b.ecer), qty: 1 });
             }
+            
             document.getElementById('inCari').value = '';
             document.getElementById('dropdownSearch').classList.add('hidden');
-            renderCart();
+            updateTabel();
         }
 
-        function renderCart() {
+        function updateTabel() {
             const tbody = document.getElementById('tabelKasir');
             let total = 0;
+            
             tbody.innerHTML = keranjang.map((k, i) => {
                 const sub = k.qty * k.ecer;
                 total += sub;
                 return `
-                    <tr>
-                        <td class="p-3">
-                            <p class="font-bold uppercase text-white text-xs">${k.nama}</p>
-                            <p class="text-[9px] text-slate-400 font-mono-price">@${formatIDR(k.ecer)}</p>
-                        </td>
+                    <tr class="border-b border-white/5">
+                        <td class="p-3 uppercase font-bold">${k.nama}<br><span class="text-[9px] font-normal opacity-50">@${k.ecer}</span></td>
                         <td class="p-3 text-center">
-                            <div class="flex items-center justify-center gap-2">
-                                <button onclick="updateQty(${i}, -1)" class="w-8 h-8 bg-white/5 rounded-lg">-</button>
-                                <span class="font-bold text-xs w-4">${k.qty}</span>
-                                <button onclick="updateQty(${i}, 1)" class="w-8 h-8 bg-blue-600/20 text-blue-400 rounded-lg">+</button>
-                            </div>
+                            <button onclick="ubahQty(${i},-1)" class="px-2 bg-slate-700 rounded">-</button>
+                            <span class="mx-2">${k.qty}</span>
+                            <button onclick="ubahQty(${i},1)" class="px-2 bg-blue-600 rounded">+</button>
                         </td>
-                        <td class="p-3 text-right font-mono-price text-[10px]">Rp ${formatIDR(sub)}</td>
-                        <td class="p-3 text-right text-red-500 font-bold" onclick="keranjang.splice(${i},1);renderCart()">✕</td>
+                        <td class="p-3 text-right font-bold">${sub}</td>
                     </tr>
                 `;
             }).join('');
-
-            const diskon = toNum(document.getElementById('diskonManual').value);
-            const grandTotal = Math.max(0, total - diskon);
-            document.getElementById('totalBelanja').innerText = `Rp ${formatIDR(grandTotal)}`;
+            
+            document.getElementById('totalHarga').innerText = total;
             hitungKembali();
         }
 
-        function updateQty(idx, n) {
-            const item = keranjang[idx];
-            const original = dataBarang.find(b => b.id === item.id);
-            if(n > 0 && item.qty >= original.stok) return toast("STOK TERBATAS!");
-            item.qty += n;
-            if(item.qty <= 0) keranjang.splice(idx, 1);
-            renderCart();
+        function ubahQty(i, n) {
+            keranjang[i].qty += n;
+            if(keranjang[i].qty <= 0) keranjang.splice(i, 1);
+            updateTabel();
         }
 
         function hitungKembali() {
-            const total = toNum(document.getElementById('totalBelanja').innerText);
-            const bayar = toNum(document.getElementById('bayarTunai').value);
-            document.getElementById('kembalianText').innerText = `Rp ${formatIDR(Math.max(0, bayar - total))}`;
+            const t = Number(document.getElementById('totalHarga').innerText);
+            const b = Number(document.getElementById('bayarTunai').value);
+            document.getElementById('kembalian').innerText = b - t;
         }
 
-        async function prosesBayar() {
-            const total = toNum(document.getElementById('totalBelanja').innerText);
-            const bayar = toNum(document.getElementById('bayarTunai').value);
-            if(total <= 0) return toast("KERANJANG KOSONG!");
-            if(bayar < total) return toast("UANG KURANG!");
+        async function prosesSimpan() {
+            const t = Number(document.getElementById('totalHarga').innerText);
+            const b = Number(document.getElementById('bayarTunai').value);
+            
+            if(t <= 0) return alert("Keranjang Kosong!");
+            if(b < t) return alert("Uang Kurang!");
 
             try {
                 const batch = db.batch();
-                const trxRef = db.collection('transaksi').doc();
-                const diskon = toNum(document.getElementById('diskonManual').value);
+                const ref = db.collection("transaksi").doc();
                 
-                batch.set(trxRef, {
-                    waktu: new Date().getTime(),
+                batch.set(ref, {
+                    waktu: Date.now(),
                     items: keranjang,
-                    total, diskon, bayar,
-                    kasir: userAktif,
-                    idTrx: 'TRX-' + Date.now().toString().slice(-6)
+                    total: t,
+                    kasir: userSekarang
                 });
 
                 keranjang.forEach(k => {
-                    batch.update(db.collection('barang').doc(k.id), { stok: firebase.firestore.FieldValue.increment(-k.qty) });
+                    batch.update(db.collection("barang").doc(k.id), {
+                        stok: firebase.firestore.FieldValue.increment(-k.qty)
+                    });
                 });
 
                 await batch.commit();
-                lastTransactionId = trxRef.id;
-                document.getElementById('modal-print-confirm').classList.replace('hidden', 'flex');
+                alert("TRANSAKSI BERHASIL DISIMPAN!");
                 keranjang = [];
                 document.getElementById('bayarTunai').value = '';
-                document.getElementById('diskonManual').value = '';
-                renderCart();
-            } catch(e) { toast("GAGAL SIMPAN!"); }
-        }
-
-        function handlePrintDecision(yes) {
-            document.getElementById('modal-print-confirm').classList.replace('flex', 'hidden');
-            if(yes) cetakStruk(lastTransactionId);
-        }
-
-        function cetakStruk(id) {
-            const trx = dataTransaksi.find(t => t.id === id);
-            if(!trx) return;
-            const area = document.getElementById('print-area');
-            area.innerHTML = `
-                <center><h2 style="margin:0">AMALIA STORE</h2></center>
-                <hr style="border:0.5px dashed #000">
-                <div style="font-size:9px">ID: ${trx.idTrx}<br>KSR: ${trx.kasir}<br>${new Date(trx.waktu).toLocaleString()}</div>
-                <hr style="border:0.5px dashed #000">
-                ${trx.items.map(i => `<div style="display:flex;justify-content:space-between;font-size:9px"><span>${i.nama} x${i.qty}</span><span>${formatIDR(i.qty*i.ecer)}</span></div>`).join('')}
-                <hr style="border:0.5px dashed #000">
-                <div style="display:flex;justify-content:space-between;font-size:10px"><b>TOTAL</b><b>Rp ${formatIDR(trx.total)}</b></div>
-                <div style="display:flex;justify-content:space-between;font-size:9px">TUNAI<span>Rp ${formatIDR(trx.bayar)}</span></div>
-                <div style="display:flex;justify-content:space-between;font-size:9px">KEMBALI<span>Rp ${formatIDR(trx.bayar-trx.total)}</span></div>
-                <center style="margin-top:10px;font-size:9px">TERIMA KASIH</center>
-            `;
-            window.print();
-        }
-
-        function renderHistory() {
-            document.getElementById('history-list').innerHTML = dataTransaksi.map(t => `
-                <div class="glass-card p-4 rounded-2xl flex justify-between items-center border-l-4 border-blue-500">
-                    <div><p class="text-xs font-black text-white">${t.idTrx}</p><p class="text-[10px] text-slate-400">${new Date(t.waktu).toLocaleTimeString()}</p></div>
-                    <div class="flex items-center gap-4"><p class="text-sm font-black font-mono-price text-blue-400">Rp ${formatIDR(t.total)}</p><button onclick="cetakStruk('${t.id}')" class="p-2 bg-white/5 rounded-lg">🖨️</button></div>
-                </div>
-            `).join('');
-        }
-
-        function updateLaporan() {
-            const totalOmzet = dataTransaksi.reduce((a, b) => a + toNum(b.total), 0);
-            document.getElementById('lap-content').innerHTML = `
-                <div class="grid grid-cols-2 gap-3 text-center">
-                    <div class="glass-card p-4 rounded-xl border-l-4 border-blue-500">
-                        <p class="text-[8px] text-blue-400 font-black uppercase">Omzet Total</p>
-                        <h1 class="text-sm font-black font-mono-price">Rp ${formatIDR(totalOmzet)}</h1>
-                    </div>
-                    <div class="glass-card p-4 rounded-xl border-l-4 border-emerald-500">
-                        <p class="text-[8px] text-slate-500 font-black uppercase">Total Trx</p>
-                        <h1 class="text-sm font-black">${dataTransaksi.length}</h1>
-                    </div>
-                </div>
-            `;
-        }
-
-        async function simpanBarang() {
-            const nama = document.getElementById('admNama').value.toUpperCase();
-            const ecer = toNum(document.getElementById('admEcer').value);
-            const stok = parseInt(document.getElementById('admStok').value) || 0;
-            if(!nama || !ecer) return toast("LENGKAPI DATA!");
-            await db.collection('barang').add({ nama, ecer, stok });
-            toast("BARANG DITAMBAHKAN");
-            ['admNama','admEcer','admStok'].forEach(id => document.getElementById(id).value = '');
-        }
-
-        function renderAdminTable(q = '') {
-            const filtered = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
-            document.getElementById('tabelAdmin').innerHTML = filtered.map(b => `
-                <tr class="hover:bg-white/5">
-                    <td class="p-4 text-white uppercase font-bold text-[11px]">${b.nama}</td>
-                    <td class="p-4 font-mono-price text-blue-400">Rp ${formatIDR(b.ecer)}</td>
-                    <td class="p-4 text-center font-bold">${b.stok}</td>
-                    <td class="p-4 text-right text-red-500 font-bold" onclick="if(confirm('Hapus item ini?')) db.collection('barang').doc('${b.id}').delete()">✕</td>
-                </tr>
-            `).join('');
+                updateTabel();
+            } catch(e) {
+                alert("Gagal Simpan Database!");
+            }
         }
     </script>
 </body>
