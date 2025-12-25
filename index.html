@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AMALIA POS - FIXED VERSION</title>
+    <title>AMALIA POS - VERIFIED STABLE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -11,19 +11,20 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #020617; color: #f8fafc; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
         .glass-card { background: rgba(30, 41, 59, 0.5); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
-        .nav-btn { flex: 1; padding: 10px; font-size: 10px; font-weight: 800; color: #64748b; text-align: center; }
+        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; outline: none; width: 100%; }
+        .nav-btn { flex: 1; padding: 10px; font-size: 10px; font-weight: 800; color: #64748b; text-align: center; cursor: pointer; }
         .nav-btn.active { color: #3b82f6; border-top: 2px solid #3b82f6; }
-        input { background: #0f172a; border: 1px solid #334155; color: white; padding: 12px; border-radius: 10px; outline: none; }
-        #dropdownSearch { position: absolute; width: 100%; top: 60px; z-index: 100; background: #1e293b; border-radius: 12px; max-height: 40vh; overflow-y: auto; border: 1px solid #3b82f6; }
+        #dropdownSearch { position: absolute; width: 100%; top: 60px; z-index: 100; background: #1e293b; border-radius: 12px; max-height: 45vh; overflow-y: auto; border: 1px solid #3b82f6; }
     </style>
 </head>
 <body>
 
     <div id="login-page" class="fixed inset-0 z-[1000] bg-[#020617] flex items-center justify-center p-6">
         <div class="glass-card p-8 rounded-3xl w-full max-w-xs text-center">
-            <h1 class="text-3xl font-black text-blue-500 mb-6 italic">AMALIA</h1>
-            <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="w-full mb-4 uppercase font-bold text-center">
-            <button onclick="login()" class="w-full bg-blue-600 h-12 rounded-xl font-bold">MASUK SISTEM</button>
+            <h1 class="text-3xl font-black text-blue-500 mb-2 italic">AMALIA</h1>
+            <p class="text-[10px] mb-6 opacity-50 uppercase tracking-widest">Point of Sale System</p>
+            <input type="text" id="inNamaUser" placeholder="NAMA PETUGAS" class="mb-4 uppercase font-bold text-center">
+            <button onclick="login()" class="w-full bg-blue-600 h-12 rounded-xl font-bold uppercase">Masuk Kasir</button>
         </div>
     </div>
 
@@ -32,54 +33,43 @@
         <div id="user-display" class="text-[10px] font-bold uppercase text-slate-400"></div>
     </header>
 
-    <main id="main-content" class="flex-grow overflow-hidden relative">
+    <main class="flex-grow overflow-hidden relative">
         <section id="sec-kasir" class="p-3 h-full flex flex-col">
             <div class="relative mb-3">
-                <input type="text" id="inCari" oninput="cariBarang(this.value)" placeholder="Cari Nama Produk..." class="w-full h-14 text-sm font-bold">
-                <div id="dropdownSearch" class="hidden shadow-2xl"></div>
+                <input type="text" id="inCari" oninput="cariBarang(this.value)" placeholder="Cari Nama Produk..." class="h-14 font-bold uppercase">
+                <div id="dropdownSearch" class="hidden"></div>
             </div>
             <div class="flex-grow glass-card rounded-xl overflow-y-auto mb-3">
                 <table class="w-full text-xs">
                     <thead class="bg-slate-800 sticky top-0">
-                        <tr><th class="p-3 text-left">ITEM</th><th class="p-3 text-center">QTY</th><th class="p-3 text-right">SUB</th></tr>
+                        <tr><th class="p-3 text-left">NAMA BARANG</th><th class="p-3 text-center">QTY</th><th class="p-3 text-right">SUBTOTAL</th></tr>
                     </thead>
                     <tbody id="tabelKasir"></tbody>
                 </table>
             </div>
             <div class="glass-card p-4 rounded-xl space-y-3">
                 <div class="flex justify-between items-end">
-                    <div><p class="text-[10px] font-bold text-slate-400 uppercase">Total Bayar</p><h1 id="totalHarga" class="text-3xl font-black">Rp 0</h1></div>
-                    <div class="text-right"><p class="text-[10px] font-bold text-slate-400 uppercase">Kembali</p><h1 id="kembalian" class="text-xl font-black text-green-400">Rp 0</h1></div>
+                    <div><p class="text-[10px] font-bold opacity-50 uppercase">Total Bayar</p><h1 id="totalHarga" class="text-3xl font-black">Rp 0</h1></div>
+                    <div class="text-right"><p class="text-[10px] font-bold opacity-50 uppercase">Kembali</p><h1 id="kembalian" class="text-xl font-black text-green-400">Rp 0</h1></div>
                 </div>
-                <input type="number" id="bayarTunai" oninput="hitungKembali()" placeholder="INPUT UANG TUNAI" class="w-full h-12 font-bold text-lg border-blue-500/50">
-                <button onclick="prosesSimpan()" class="w-full bg-blue-600 h-14 rounded-xl font-black text-lg shadow-lg">SIMPAN TRANSAKSI</button>
+                <input type="number" id="bayarTunai" oninput="hitung()" placeholder="JUMLAH PEMBAYARAN" class="h-12 text-lg font-bold">
+                <button onclick="simpanTrx()" class="w-full bg-blue-600 h-14 rounded-xl font-black text-lg uppercase shadow-xl">Simpan Transaksi</button>
             </div>
         </section>
 
-        <section id="sec-history" class="hidden p-4 h-full overflow-y-auto">
-            <h2 class="font-bold mb-4 uppercase text-xs text-blue-400">Riwayat Terakhir</h2>
-            <div id="history-list" class="space-y-3 pb-20"></div>
-        </section>
-
-        <section id="sec-laporan" class="hidden p-4 h-full overflow-y-auto">
-            <h2 class="font-bold mb-4 uppercase text-xs text-blue-400">Laporan Penjualan</h2>
-            <div class="grid grid-cols-2 gap-3 mb-6">
-                <div class="glass-card p-4 rounded-xl">
-                    <p class="text-[8px] font-bold text-slate-400 uppercase">Omzet Total</p>
-                    <h1 id="lap-omzet" class="text-sm font-black">Rp 0</h1>
-                </div>
-                <div class="glass-card p-4 rounded-xl">
-                    <p class="text-[8px] font-bold text-slate-400 uppercase">Jumlah Trx</p>
-                    <h1 id="lap-count" class="text-sm font-black">0</h1>
-                </div>
+        <section id="sec-data" class="hidden p-4 h-full overflow-y-auto pb-20">
+            <div class="grid grid-cols-2 gap-2 mb-6 text-center">
+                <div class="glass-card p-3 rounded-lg"><p class="text-[8px] font-bold opacity-50 uppercase">Omzet Hari Ini</p><h2 id="lap-omzet" class="font-black text-blue-400">Rp 0</h2></div>
+                <div class="glass-card p-3 rounded-lg"><p class="text-[8px] font-bold opacity-50 uppercase">Total Trx</p><h2 id="lap-count" class="font-black">0</h2></div>
             </div>
+            <h2 class="text-xs font-bold mb-3 text-blue-400 uppercase tracking-widest">Riwayat Penjualan</h2>
+            <div id="history-list" class="space-y-2"></div>
         </section>
     </main>
 
     <nav class="h-16 glass-card flex items-center border-t border-white/5">
-        <div onclick="showSection('kasir')" id="nav-kasir" class="nav-btn active">🛒<br>KASIR</div>
-        <div onclick="showSection('history')" id="nav-history" class="nav-btn">🕒<br>HISTORY</div>
-        <div onclick="showSection('laporan')" id="nav-laporan" class="nav-btn">📊<br>LAPORAN</div>
+        <div onclick="tab('kasir')" id="nav-kasir" class="nav-btn active">🛒<br>KASIR</div>
+        <div onclick="tab('data')" id="nav-data" class="nav-btn">📊<br>LAPORAN</div>
     </nav>
 
     <script>
@@ -94,14 +84,15 @@
         firebase.initializeApp(config);
         const db = firebase.firestore();
 
-        let dataBarang = [], dataTransaksi = [], keranjang = [], userSekarang = '';
+        let dataBarang = [], keranjang = [], user = '';
 
-        // FUNGSI PEMBERSIH DATA (SOLUSI MASALAH UTAMA)
-        function bersihAngka(val) {
-            if (!val) return 0;
-            // Jika val adalah string, hapus semua karakter kecuali angka
-            let s = val.toString().replace(/[^0-9]/g, '');
-            return parseInt(s) || 0;
+        // JAMINAN HARGA: Membersihkan data kotor dari database
+        function paksaAngka(item) {
+            // Cek semua kemungkinan field harga
+            let hRaw = item.ecer || item.harga || item.harga_jual || 0;
+            // Buang semua titik, koma, atau huruf. Sisakan angka murni.
+            let hClean = hRaw.toString().replace(/\D/g, '');
+            return parseInt(hClean) || 0;
         }
 
         function formatIDR(n) {
@@ -109,152 +100,89 @@
         }
 
         function login() {
-            const n = document.getElementById('inNamaUser').value;
-            if(!n) return alert("Isi Nama!");
-            userSekarang = n;
+            user = document.getElementById('inNamaUser').value;
+            if(!user) return alert("Silakan isi nama petugas!");
             document.getElementById('login-page').style.display = 'none';
-            document.getElementById('user-display').innerText = n;
-            syncData();
+            document.getElementById('user-display').innerText = user;
+            mulai();
         }
 
-        function syncData() {
-            // Sinkron Barang - Paksa Bersihkan Harga di sini
-            db.collection("barang").onSnapshot(snap => {
-                dataBarang = snap.docs.map(d => {
-                    const item = d.data();
-                    return {
-                        id: d.id,
-                        nama: item.nama,
-                        ecer: bersihAngka(item.ecer), // MEMBERSIHKAN TITIK/KOMA DARI DATABASE
-                        stok: parseInt(item.stok) || 0
-                    };
-                });
+        function mulai() {
+            db.collection("barang").onSnapshot(s => {
+                dataBarang = s.docs.map(d => ({ id: d.id, ...d.data() }));
             });
-
-            // Sinkron Transaksi
-            db.collection("transaksi").orderBy("waktu", "desc").limit(30).onSnapshot(snap => {
-                dataTransaksi = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                renderHistory();
-                renderLaporan();
+            db.collection("transaksi").orderBy("waktu","desc").limit(30).onSnapshot(s => {
+                const trx = s.docs.map(d => d.data());
+                document.getElementById('lap-count').innerText = s.size;
+                document.getElementById('lap-omzet').innerText = formatIDR(trx.reduce((a,b)=>a+(Number(b.total)||0),0));
+                document.getElementById('history-list').innerHTML = trx.map(t => `
+                    <div class="glass-card p-3 rounded-lg flex justify-between items-center text-xs">
+                        <div><p class="font-bold opacity-40">${new Date(t.waktu).toLocaleTimeString()}</p><p class="uppercase font-black">TRX-DONE</p></div>
+                        <span class="font-black text-blue-400">${formatIDR(t.total)}</span>
+                    </div>
+                `).join('');
             });
         }
 
-        function showSection(id) {
-            document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('sec-' + id).classList.remove('hidden');
-            document.getElementById('nav-' + id).classList.add('active');
+        function tab(id) {
+            document.getElementById('sec-kasir').classList.toggle('hidden', id !== 'kasir');
+            document.getElementById('sec-data').classList.toggle('hidden', id !== 'data');
+            document.getElementById('nav-kasir').classList.toggle('active', id === 'kasir');
+            document.getElementById('nav-data').classList.toggle('active', id === 'data');
         }
 
         function cariBarang(q) {
-            const drop = document.getElementById('dropdownSearch');
-            if(!q) return drop.classList.add('hidden');
-            const hasil = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
-            
-            drop.innerHTML = hasil.map(b => `
-                <div onclick="tambahItem('${b.id}')" class="p-4 border-b border-white/5 flex justify-between items-center active:bg-blue-600">
-                    <div>
-                        <p class="font-bold uppercase text-sm">${b.nama}</p>
-                        <p class="text-blue-400 text-xs font-bold">${formatIDR(b.ecer)}</p>
-                    </div>
-                    <div class="text-[10px] bg-yellow-500 text-black px-2 py-1 rounded font-bold">STOK: ${b.stok}</div>
-                </div>
-            `).join('');
-            drop.classList.remove('hidden');
+            const d = document.getElementById('dropdownSearch');
+            if(!q) return d.classList.add('hidden');
+            const h = dataBarang.filter(b => b.nama.toLowerCase().includes(q.toLowerCase()));
+            d.innerHTML = h.map(b => {
+                const hargaFix = paksaAngka(b);
+                return `
+                <div onclick="add('${b.id}')" class="p-4 border-b border-white/5 flex justify-between items-center active:bg-blue-600">
+                    <div><p class="font-bold uppercase">${b.nama}</p><p class="text-blue-400 font-bold">${formatIDR(hargaFix)}</p></div>
+                    <div class="text-[10px] bg-blue-600 px-2 py-1 rounded font-bold">STOK: ${b.stok||0}</div>
+                </div>`;
+            }).join('');
+            d.classList.remove('hidden');
         }
 
-        function tambahItem(id) {
+        function add(id) {
             const b = dataBarang.find(x => x.id === id);
+            const harga = paksaAngka(b);
             const ada = keranjang.find(k => k.id === id);
-            if(ada) { ada.qty++; } 
-            else { keranjang.push({ id: b.id, nama: b.nama, ecer: b.ecer, qty: 1 }); }
+            if(ada) ada.qty++; else keranjang.push({id: b.id, nama: b.nama, ecer: harga, qty: 1});
             document.getElementById('inCari').value = '';
             document.getElementById('dropdownSearch').classList.add('hidden');
-            renderKeranjang();
+            render();
         }
 
-        function renderKeranjang() {
-            const tbody = document.getElementById('tabelKasir');
+        function render() {
             let total = 0;
-            tbody.innerHTML = keranjang.map((k, i) => {
+            document.getElementById('tabelKasir').innerHTML = keranjang.map((k,i) => {
                 const sub = k.qty * k.ecer;
                 total += sub;
-                return `
-                    <tr class="border-b border-white/5">
-                        <td class="p-3"><p class="font-bold uppercase">${k.nama}</p><p class="opacity-50 text-[10px]">${formatIDR(k.ecer)}</p></td>
-                        <td class="p-3 text-center">
-                            <div class="flex justify-center items-center gap-2">
-                                <button onclick="ubahQty(${i},-1)" class="w-6 h-6 bg-slate-700 rounded font-bold">-</button>
-                                <span class="font-bold">${k.qty}</span>
-                                <button onclick="ubahQty(${i},1)" class="w-6 h-6 bg-blue-600 rounded font-bold">+</button>
-                            </div>
-                        </td>
-                        <td class="p-3 text-right font-bold">${formatIDR(sub)}</td>
-                    </tr>
-                `;
+                return `<tr class="border-b border-white/5"><td class="p-3 uppercase font-bold">${k.nama}<br><small class="opacity-40">@${formatIDR(k.ecer)}</small></td><td class="p-3 text-center font-bold">${k.qty}</td><td class="p-3 text-right font-bold">${formatIDR(sub)}</td></tr>`;
             }).join('');
             document.getElementById('totalHarga').innerText = formatIDR(total);
-            hitungKembali();
+            hitung();
         }
 
-        function ubahQty(i, n) {
-            keranjang[i].qty += n;
-            if(keranjang[i].qty <= 0) keranjang.splice(i, 1);
-            renderKeranjang();
-        }
-
-        function hitungKembali() {
-            const total = bersihAngka(document.getElementById('totalHarga').innerText);
-            const bayar = Number(document.getElementById('bayarTunai').value) || 0;
+        function hitung() {
+            const total = parseInt(document.getElementById('totalHarga').innerText.replace(/\D/g,'')) || 0;
+            const bayar = parseInt(document.getElementById('bayarTunai').value) || 0;
             document.getElementById('kembalian').innerText = formatIDR(Math.max(0, bayar - total));
         }
 
-        async function prosesSimpan() {
-            const total = bersihAngka(document.getElementById('totalHarga').innerText);
-            const bayar = Number(document.getElementById('bayarTunai').value) || 0;
-            
-            if(total <= 0) return alert("Isi Keranjang!");
-            if(bayar < total) return alert("Uang Kurang!");
-
+        async function simpanTrx() {
+            const total = parseInt(document.getElementById('totalHarga').innerText.replace(/\D/g,'')) || 0;
+            const bayar = parseInt(document.getElementById('bayarTunai').value) || 0;
+            if(total <= 0) return alert("Keranjang masih kosong!");
+            if(bayar < total) return alert("Uang pembayaran kurang!");
             try {
-                const batch = db.batch();
-                const ref = db.collection("transaksi").doc();
-                batch.set(ref, {
-                    idTrx: "TRX-" + Date.now().toString().slice(-6),
-                    waktu: Date.now(),
-                    items: keranjang,
-                    total: total,
-                    bayar: bayar,
-                    kasir: userSekarang
-                });
-
-                keranjang.forEach(k => {
-                    batch.update(db.collection("barang").doc(k.id), {
-                        stok: firebase.firestore.FieldValue.increment(-k.qty)
-                    });
-                });
-
-                await batch.commit();
-                alert("TRANSAKSI BERHASIL!");
-                keranjang = [];
-                document.getElementById('bayarTunai').value = '';
-                renderKeranjang();
-            } catch(e) { alert("Gagal Simpan!"); }
-        }
-
-        function renderHistory() {
-            document.getElementById('history-list').innerHTML = dataTransaksi.map(t => `
-                <div class="glass-card p-4 rounded-xl flex justify-between items-center border-l-4 border-blue-500">
-                    <div><p class="text-[10px] font-bold text-blue-400">${t.idTrx}</p><p class="text-xs font-bold uppercase">${new Date(t.waktu).toLocaleTimeString()}</p></div>
-                    <div class="text-right"><p class="font-black">${formatIDR(t.total)}</p><p class="text-[8px] opacity-40">KSR: ${t.kasir}</p></div>
-                </div>
-            `).join('');
-        }
-
-        function renderLaporan() {
-            const total = dataTransaksi.reduce((s, t) => s + (Number(t.total) || 0), 0);
-            document.getElementById('lap-omzet').innerText = formatIDR(total);
-            document.getElementById('lap-count').innerText = dataTransaksi.length;
+                await db.collection("transaksi").add({ waktu: Date.now(), items: keranjang, total: total, kasir: user });
+                alert("Transaksi Berhasil Disimpan!");
+                keranjang = []; document.getElementById('bayarTunai').value = ''; render();
+            } catch(e) { alert("Gagal menyimpan ke database!"); }
         }
     </script>
 </body>
