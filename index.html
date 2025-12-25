@@ -9,8 +9,8 @@
     
     <title>TOKO AMALIA - POS System</title>
     
-    <script src="https://cdn.tailwindcss.com?v=1.0.6"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css?v=1.0.6" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?v=1.0.7"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css?v=1.0.7" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
@@ -24,7 +24,6 @@
         .stok-tipis { color: #ca8a04; font-weight: 800; }
         .stok-habis { color: #dc2626; font-weight: 800; }
         
-        /* Custom Scrollbar untuk tampilan lebih bersih */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
@@ -60,7 +59,7 @@
             </div>
         </div>
         <div class="text-right">
-             <p id="userNameDisplay" class="text-[10px] text-blue-600 font-black uppercase tracking-tighter"></p>
+             <p id="userNameDisplay" class="text-[12px] text-blue-600 font-black uppercase tracking-tighter"></p>
              <button onclick="location.reload(true)" class="text-red-500 text-[10px] font-bold px-2 py-1 bg-red-50 rounded-lg">Logout</button>
         </div>
     </header>
@@ -71,7 +70,7 @@
             <div class="lg:col-span-7 flex flex-col">
                 <div class="relative mb-4">
                     <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="searchBarang" onkeyup="renderKasirItems()" placeholder="Cari barang..." class="w-full p-4 pl-14 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-600 text-base font-medium">
+                    <input type="text" id="searchBarang" onkeyup="renderKasirItems()" placeholder="Cari barang..." class="w-full p-4 pl-14 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-600 text-lg font-bold">
                 </div>
                 
                 <div id="itemGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 overflow-y-auto max-h-[40vh] lg:max-h-[70vh] pb-4 px-1">
@@ -81,28 +80,28 @@
             <div class="lg:col-span-5">
                 <div class="bg-white rounded-[2.5rem] shadow-xl border flex flex-col h-fit sticky top-24 overflow-hidden">
                     <div class="p-5 border-b flex justify-between items-center bg-gray-50">
-                        <h3 class="font-black text-gray-800 uppercase text-xs">Keranjang</h3>
-                        <button onclick="resetCart()" class="text-red-500 font-bold text-[10px] px-3 py-1 border rounded-full bg-white">Reset</button>
+                        <h3 class="font-black text-gray-800 uppercase text-sm">Keranjang</h3>
+                        <button onclick="resetCart()" class="text-red-500 font-bold text-[11px] px-3 py-1 border rounded-full bg-white">Reset</button>
                     </div>
                     
                     <div id="cartList" class="p-4 space-y-3 max-h-[30vh] overflow-y-auto bg-white"></div>
                     
                     <div id="emptyCart" class="py-8 text-center text-gray-300 flex flex-col items-center">
                         <i class="fas fa-shopping-cart text-4xl mb-2 opacity-10"></i>
-                        <p class="text-[9px] font-bold uppercase tracking-widest">Belum ada barang</p>
+                        <p class="text-[11px] font-bold uppercase tracking-widest">Belum ada barang</p>
                     </div>
 
                     <div class="p-6 bg-blue-50 border-t-2 border-dashed border-blue-100">
                         <div class="flex justify-between items-center mb-3">
-                            <span class="text-gray-500 font-bold text-xs uppercase">Total</span>
-                            <span id="totalHarga" class="text-2xl font-black text-blue-700">Rp 0</span>
+                            <span class="text-gray-500 font-bold text-sm uppercase">Total</span>
+                            <span id="totalHarga" class="text-4xl font-black text-blue-700">Rp 0</span>
                         </div>
-                        <input type="number" id="inputBayar" oninput="hitungKembalian()" placeholder="Uang Bayar" class="w-full p-4 bg-white rounded-2xl border-2 border-blue-100 focus:border-blue-600 outline-none text-xl font-black mb-3 text-center">
+                        <input type="number" id="inputBayar" oninput="hitungKembalian()" placeholder="Uang Bayar" class="w-full p-5 bg-white rounded-2xl border-2 border-blue-100 focus:border-blue-600 outline-none text-3xl font-black mb-3 text-center">
                         <div class="flex justify-between items-center p-4 bg-white rounded-2xl shadow-sm mb-4">
-                            <span class="text-[9px] font-black text-gray-400 uppercase">Kembali</span>
-                            <span id="textKembalian" class="text-xl font-black text-green-600">Rp 0</span>
+                            <span class="text-[11px] font-black text-gray-400 uppercase">Kembali</span>
+                            <span id="textKembalian" class="text-2xl font-black text-green-600">Rp 0</span>
                         </div>
-                        <button onclick="prosesTransaksi()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg active:scale-95 transition uppercase tracking-tighter">Simpan & Cetak</button>
+                        <button onclick="prosesTransaksi()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl shadow-xl active:scale-95 transition uppercase tracking-tighter">Simpan & Cetak</button>
                     </div>
                 </div>
             </div>
@@ -111,14 +110,14 @@
         <section id="sectionHistory" class="hidden">
             <div class="flex flex-col gap-4 mb-8">
                 <div class="flex bg-white p-2 rounded-2xl shadow-sm border gap-2">
-                    <button id="btnDaily" onclick="filterLaporan('daily')" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase active-tab">Harian</button>
-                    <button id="btnMonthly" onclick="filterLaporan('monthly')" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase bg-gray-50 text-gray-400">Bulanan</button>
-                    <button id="btnYearly" onclick="filterLaporan('yearly')" class="flex-1 py-3 rounded-xl font-black text-[10px] uppercase bg-gray-50 text-gray-400">Tahunan</button>
+                    <button id="btnDaily" onclick="filterLaporan('daily')" class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase active-tab">Harian</button>
+                    <button id="btnMonthly" onclick="filterLaporan('monthly')" class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase bg-gray-50 text-gray-400">Bulanan</button>
+                    <button id="btnYearly" onclick="filterLaporan('yearly')" class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase bg-gray-50 text-gray-400">Tahunan</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                     <div id="filterInputContainer" class="flex gap-2"></div>
                     <div class="bg-blue-900 text-white p-5 rounded-2xl flex justify-between items-center shadow-lg">
-                        <div><p class="text-[9px] font-black uppercase opacity-60">Omset</p><h4 id="totalOmset" class="text-2xl font-black">Rp 0</h4></div>
+                        <div><p class="text-[11px] font-black uppercase opacity-60">Omset</p><h4 id="totalOmset" class="text-3xl font-black">Rp 0</h4></div>
                         <i class="fas fa-wallet text-2xl opacity-20"></i>
                     </div>
                 </div>
@@ -130,8 +129,8 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                 <div><h3 class="text-xl font-black text-gray-800 uppercase">Stok Barang</h3></div>
                 <div class="flex gap-2 w-full md:w-auto">
-                    <input type="text" id="searchGudang" onkeyup="renderAdminTable()" placeholder="Cari..." class="flex-1 md:w-64 p-3 bg-white border rounded-2xl text-xs font-bold">
-                    <button onclick="openModalBarang()" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase">Tambah</button>
+                    <input type="text" id="searchGudang" onkeyup="renderAdminTable()" placeholder="Cari..." class="flex-1 md:w-64 p-3 bg-white border rounded-2xl text-sm font-bold">
+                    <button onclick="openModalBarang()" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-sm uppercase">Tambah</button>
                 </div>
             </div>
             <div class="bg-white rounded-[2.5rem] shadow-sm border overflow-hidden">
@@ -139,10 +138,10 @@
                     <table class="w-full text-left">
                         <thead class="bg-gray-50 border-b">
                             <tr>
-                                <th class="p-6 text-[10px] font-black text-gray-400 uppercase">Produk</th>
-                                <th class="p-6 text-[10px] font-black text-gray-400 uppercase">Harga</th>
-                                <th class="p-6 text-[10px] font-black text-gray-400 uppercase">Stok</th>
-                                <th class="p-6 text-[10px] font-black text-gray-400 uppercase text-center">Aksi</th>
+                                <th class="p-6 text-[11px] font-black text-gray-400 uppercase">Produk</th>
+                                <th class="p-6 text-[11px] font-black text-gray-400 uppercase">Harga</th>
+                                <th class="p-6 text-[11px] font-black text-gray-400 uppercase">Stok</th>
+                                <th class="p-6 text-[11px] font-black text-gray-400 uppercase text-center">Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="adminTableBody" class="divide-y divide-gray-100"></tbody>
@@ -153,9 +152,9 @@
     </main>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-6 py-4 flex justify-around items-center z-40 shadow-lg no-print">
-        <button onclick="showSection('Kasir')" class="flex flex-col items-center gap-1 nav-btn active-nav px-4 py-2 rounded-2xl" id="navKasir"><i class="fas fa-cash-register text-xl"></i><span class="text-[9px] font-black uppercase">Kasir</span></button>
-        <button onclick="showSection('History')" class="flex flex-col items-center gap-1 nav-btn text-gray-400 px-4 py-2 rounded-2xl" id="navHistory"><i class="fas fa-history text-xl"></i><span class="text-[9px] font-black uppercase">Laporan</span></button>
-        <button id="adminNavBtn" onclick="showSection('Admin')" class="flex flex-col items-center gap-1 nav-btn text-gray-400 px-4 py-2 rounded-2xl hidden"><i class="fas fa-boxes text-xl"></i><span class="text-[9px] font-black uppercase">Gudang</span></button>
+        <button onclick="showSection('Kasir')" class="flex flex-col items-center gap-1 nav-btn active-nav px-4 py-2 rounded-2xl" id="navKasir"><i class="fas fa-cash-register text-xl"></i><span class="text-[10px] font-black uppercase">Kasir</span></button>
+        <button onclick="showSection('History')" class="flex flex-col items-center gap-1 nav-btn text-gray-400 px-4 py-2 rounded-2xl" id="navHistory"><i class="fas fa-history text-xl"></i><span class="text-[10px] font-black uppercase">Laporan</span></button>
+        <button id="adminNavBtn" onclick="showSection('Admin')" class="flex flex-col items-center gap-1 nav-btn text-gray-400 px-4 py-2 rounded-2xl hidden"><i class="fas fa-boxes text-xl"></i><span class="text-[10px] font-black uppercase">Gudang</span></button>
     </nav>
 
     <div id="modalBarang" class="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4 hidden no-print">
@@ -163,13 +162,13 @@
             <h3 class="text-xl font-black mb-6 uppercase" id="modalTitle">Data Barang</h3>
             <div class="space-y-4">
                 <input type="hidden" id="editKey">
-                <input type="text" id="formNama" placeholder="Nama Produk" class="w-full p-4 bg-gray-50 rounded-2xl font-bold uppercase outline-none">
+                <input type="text" id="formNama" placeholder="Nama Produk" class="w-full p-4 bg-gray-50 rounded-2xl font-bold uppercase outline-none text-lg">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="number" id="formHargaPcs" placeholder="Harga Pcs" class="w-full p-4 bg-gray-50 rounded-2xl font-bold text-blue-600 outline-none">
-                    <input type="number" id="formHargaBox" placeholder="Harga Box" class="w-full p-4 bg-gray-50 rounded-2xl font-bold text-green-600 outline-none">
+                    <input type="number" id="formHargaPcs" placeholder="Harga Pcs" class="w-full p-4 bg-gray-50 rounded-2xl font-bold text-blue-600 outline-none text-lg">
+                    <input type="number" id="formHargaBox" placeholder="Harga Box" class="w-full p-4 bg-gray-50 rounded-2xl font-bold text-green-600 outline-none text-lg">
                 </div>
-                <input type="number" id="formStok" placeholder="Jumlah Stok" class="w-full p-4 bg-gray-50 rounded-2xl font-bold outline-none">
-                <button onclick="saveBarang()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase">Simpan</button>
+                <input type="number" id="formStok" placeholder="Jumlah Stok" class="w-full p-4 bg-gray-50 rounded-2xl font-bold outline-none text-lg">
+                <button onclick="saveBarang()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase text-lg">Simpan</button>
                 <button onclick="closeModalBarang()" class="w-full text-gray-400 font-bold py-2 text-sm uppercase">Batal</button>
             </div>
         </div>
@@ -179,7 +178,7 @@
         <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center">
             <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"><i class="fas fa-check text-3xl"></i></div>
             <h3 class="text-xl font-black mb-6 uppercase">Berhasil</h3>
-            <button onclick="printFromLastTrx()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black mb-3 uppercase">Cetak Struk</button>
+            <button onclick="printFromLastTrx()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black mb-3 uppercase text-lg">Cetak Struk</button>
             <button onclick="closeModalSelesai()" class="w-full bg-gray-100 text-gray-600 py-4 rounded-2xl font-bold uppercase">Selesai</button>
         </div>
     </div>
@@ -225,7 +224,7 @@
                 const itm = masterBarang[key];
                 if (itm.nama.toLowerCase().includes(search)) {
                     let sClass = itm.stok <= 0 ? "bg-red-500 text-white" : (itm.stok < 10 ? "bg-yellow-500 text-black" : "bg-green-500 text-white");
-                    grid.innerHTML += `<div onclick="addToCart('${key}')" class="bg-white p-4 rounded-2xl border-2 border-transparent active:border-blue-500 shadow-sm active:scale-95 transition"><h4 class="font-black text-gray-800 text-[10px] truncate uppercase mb-1">${itm.nama}</h4><p class="text-blue-700 font-extrabold text-sm">Rp ${itm.hargaPcs.toLocaleString()}</p><div class="mt-2"><span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${sClass}">Stok: ${itm.stok}</span></div></div>`;
+                    grid.innerHTML += `<div onclick="addToCart('${key}')" class="bg-white p-4 rounded-2xl border-2 border-transparent active:border-blue-500 shadow-sm active:scale-95 transition"><h4 class="font-black text-gray-800 text-[12px] truncate uppercase mb-1">${itm.nama}</h4><p class="text-blue-700 font-extrabold text-lg">Rp ${itm.hargaPcs.toLocaleString()}</p><div class="mt-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${sClass}">Stok: ${itm.stok}</span></div></div>`;
                 }
             });
         }
@@ -251,20 +250,20 @@
 
                 list.innerHTML += `
                 <div class="bg-white p-3 rounded-xl border shadow-sm">
-                    <div class="flex justify-between font-black text-[9px] uppercase text-gray-700 mb-1">
+                    <div class="flex justify-between font-black text-[11px] uppercase text-gray-700 mb-1">
                         <span>${itm.nama}</span>
-                        <button onclick="removeItem(${idx})" class="text-red-300"><i class="fas fa-times"></i></button>
+                        <button onclick="removeItem(${idx})" class="text-red-300 p-1"><i class="fas fa-times"></i></button>
                     </div>
-                    <div class="text-[8px] font-bold ${isPcs ? 'text-blue-600' : 'text-green-600'} mb-2 uppercase">@Rp ${currentPrice.toLocaleString()}</div>
+                    <div class="text-[10px] font-bold ${isPcs ? 'text-blue-600' : 'text-green-600'} mb-2 uppercase">@Rp ${currentPrice.toLocaleString()}</div>
                     <div class="flex justify-between items-center">
                         <div class="flex gap-1 bg-gray-100 p-0.5 rounded">
-                            <button onclick="changeMode(${idx},'pcs')" class="text-[8px] px-2 py-1 rounded ${pClr}">PCS</button>
-                            <button onclick="changeMode(${idx},'box')" class="text-[8px] px-2 py-1 rounded ${bClr}">BOX</button>
+                            <button onclick="changeMode(${idx},'pcs')" class="text-[10px] px-3 py-1.5 rounded ${pClr}">PCS</button>
+                            <button onclick="changeMode(${idx},'box')" class="text-[10px] px-3 py-1.5 rounded ${bClr}">BOX</button>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="updateQty(${idx},-1)" class="w-7 h-7 bg-gray-100 rounded-lg text-xs">-</button>
-                            <span class="font-black text-gray-800 text-xs">${itm.qty}</span>
-                            <button onclick="updateQty(${idx},1)" class="w-7 h-7 bg-blue-600 text-white rounded-lg text-xs">+</button>
+                            <button onclick="updateQty(${idx},-1)" class="w-8 h-8 bg-gray-100 rounded-lg text-lg font-bold">-</button>
+                            <span class="font-black text-gray-800 text-sm">${itm.qty}</span>
+                            <button onclick="updateQty(${idx},1)" class="w-8 h-8 bg-blue-600 text-white rounded-lg text-lg font-bold">+</button>
                         </div>
                     </div>
                 </div>`;
@@ -347,7 +346,7 @@
                     let match = (currentFilterMode==='daily' && tr.dateStr===val) || (currentFilterMode==='monthly' && tr.monthStr===val) || (currentFilterMode==='yearly' && tr.yearStr===val);
                     if(match) {
                         totalOmset += tr.total;
-                        list.innerHTML += `<div class="bg-white p-5 rounded-[2rem] shadow-sm border flex flex-col"><div class="flex justify-between items-start mb-3 border-b pb-2"><div><span class="text-[9px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-1 rounded">${tr.kasir}</span><p class="text-[9px] text-gray-400 mt-1 font-bold">${new Date(tr.timestamp).toLocaleString('id-ID')}</p></div><button onclick='reprint("${id}")' class="bg-blue-600 w-10 h-10 rounded-xl text-white"><i class="fas fa-print"></i></button></div><div class="space-y-1 mb-3">${tr.items.map(i => `<div class="flex justify-between text-[11px] font-bold text-gray-600"><span>${i.nama} x${i.qty}</span><span>${((i.mode === 'pcs' ? i.hargaPcs : i.hargaBox) * i.qty).toLocaleString()}</span></div>`).join('')}</div><div class="flex justify-between items-center pt-2 border-t-2 border-dashed"><span class="text-[10px] font-black text-gray-400 uppercase">Total</span><span class="text-base font-black text-gray-900">Rp ${tr.total.toLocaleString()}</span></div></div>`;
+                        list.innerHTML += `<div class="bg-white p-5 rounded-[2rem] shadow-sm border flex flex-col"><div class="flex justify-between items-start mb-3 border-b pb-2"><div><span class="text-[10px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-1 rounded">${tr.kasir}</span><p class="text-[10px] text-gray-400 mt-1 font-bold">${new Date(tr.timestamp).toLocaleString('id-ID')}</p></div><button onclick='reprint("${id}")' class="bg-blue-600 w-10 h-10 rounded-xl text-white"><i class="fas fa-print"></i></button></div><div class="space-y-1 mb-3">${tr.items.map(i => `<div class="flex justify-between text-[12px] font-bold text-gray-600"><span>${i.nama} x${i.qty}</span><span>${((i.mode === 'pcs' ? i.hargaPcs : i.hargaBox) * i.qty).toLocaleString()}</span></div>`).join('')}</div><div class="flex justify-between items-center pt-2 border-t-2 border-dashed"><span class="text-[11px] font-black text-gray-400 uppercase">Total</span><span class="text-xl font-black text-gray-900">Rp ${tr.total.toLocaleString()}</span></div></div>`;
                     }
                 });
                 document.getElementById('totalOmset').innerText = 'Rp ' + totalOmset.toLocaleString();
@@ -364,7 +363,7 @@
                 const itm = masterBarang[key];
                 if (itm.nama.toLowerCase().includes(search)) {
                     let sClass = itm.stok <= 0 ? "stok-habis" : (itm.stok < 10 ? "stok-tipis" : "stok-aman");
-                    body.innerHTML += `<tr><td class="p-6 uppercase text-sm font-black">${itm.nama}</td><td class="p-6"><div class="text-[9px] font-bold text-blue-600">Pcs: ${itm.hargaPcs.toLocaleString()}</div><div class="text-[9px] font-bold text-green-600">Box: ${itm.hargaBox.toLocaleString()}</div></td><td class="p-6"><span class="${sClass}">${itm.stok}</span></td><td class="p-6 text-center"><button onclick="editBarang('${key}')" class="text-blue-600 mr-3"><i class="fas fa-edit"></i></button><button onclick="deleteBarang('${key}')" class="text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
+                    body.innerHTML += `<tr><td class="p-6 uppercase text-sm font-black">${itm.nama}</td><td class="p-6"><div class="text-[11px] font-bold text-blue-600">Pcs: ${itm.hargaPcs.toLocaleString()}</div><div class="text-[11px] font-bold text-green-600">Box: ${itm.hargaBox.toLocaleString()}</div></td><td class="p-6"><span class="${sClass} text-lg">${itm.stok}</span></td><td class="p-6 text-center"><button onclick="editBarang('${key}')" class="text-blue-600 mr-3 text-lg"><i class="fas fa-edit"></i></button><button onclick="deleteBarang('${key}')" class="text-red-500 text-lg"><i class="fas fa-trash"></i></button></td></tr>`;
                 }
             });
         }
