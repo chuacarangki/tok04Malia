@@ -9,8 +9,8 @@
     
     <title>TOKO AMALIA - POS System</title>
     
-    <script src="https://cdn.tailwindcss.com?v=1.0.5"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css?v=1.0.5" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com?v=1.0.6"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css?v=1.0.6" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
     
@@ -23,6 +23,12 @@
         .stok-aman { color: #16a34a; font-weight: 800; }
         .stok-tipis { color: #ca8a04; font-weight: 800; }
         .stok-habis { color: #dc2626; font-weight: 800; }
+        
+        /* Custom Scrollbar untuk tampilan lebih bersih */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
@@ -35,7 +41,6 @@
             </div>
             <h1 class="text-3xl font-black text-gray-800 tracking-tighter uppercase leading-none">Toko Amalia</h1>
             <p class="text-[10px] text-gray-500 font-bold mt-2 leading-tight uppercase px-4">Jl. Poros Carangki-Kariango depan DDI Lekopancing</p>
-            
             <div class="mt-8 space-y-4">
                 <input type="text" id="loginName" placeholder="Nama Kasir" class="w-full p-4 bg-gray-100 rounded-2xl border-none focus:ring-2 focus:ring-blue-600 text-lg font-bold">
                 <button onclick="login('kasir')" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">MASUK KASIR</button>
@@ -51,41 +56,53 @@
             <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-shopping-bag text-xl"></i></div>
             <div>
                 <h2 class="text-xl font-extrabold text-gray-900 leading-none uppercase">Toko Amalia</h2>
-                <p class="text-[8px] text-gray-400 font-bold uppercase">Jl. Poros Carangki-Kariango</p>
+                <p class="text-[8px] text-gray-400 font-bold uppercase">POS SYSTEM</p>
             </div>
         </div>
         <div class="text-right">
              <p id="userNameDisplay" class="text-[10px] text-blue-600 font-black uppercase tracking-tighter"></p>
-             <button onclick="location.reload(true)" class="text-red-500 text-[10px] font-bold px-2 py-1 bg-red-50 rounded-lg">Logout & Refresh</button>
+             <button onclick="location.reload(true)" class="text-red-500 text-[10px] font-bold px-2 py-1 bg-red-50 rounded-lg">Logout</button>
         </div>
     </header>
 
     <main class="p-4 max-w-7xl mx-auto no-print">
         <section id="sectionKasir" class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-            <div class="lg:col-span-7">
-                <div class="relative mb-6">
+            
+            <div class="lg:col-span-7 flex flex-col">
+                <div class="relative mb-4">
                     <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="searchBarang" onkeyup="renderKasirItems()" placeholder="Cari barang..." class="w-full p-5 pl-14 bg-white rounded-3xl shadow-sm border-none focus:ring-2 focus:ring-blue-600 text-lg font-medium">
+                    <input type="text" id="searchBarang" onkeyup="renderKasirItems()" placeholder="Cari barang..." class="w-full p-4 pl-14 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-600 text-base font-medium">
                 </div>
-                <div id="itemGrid" class="grid grid-cols-2 md:grid-cols-3 gap-4"></div>
+                
+                <div id="itemGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 overflow-y-auto max-h-[40vh] lg:max-h-[70vh] pb-4 px-1">
+                    </div>
             </div>
 
             <div class="lg:col-span-5">
-                <div class="bg-white rounded-[2.5rem] shadow-xl border flex flex-col h-fit sticky top-28 overflow-hidden">
-                    <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+                <div class="bg-white rounded-[2.5rem] shadow-xl border flex flex-col h-fit sticky top-24 overflow-hidden">
+                    <div class="p-5 border-b flex justify-between items-center bg-gray-50">
                         <h3 class="font-black text-gray-800 uppercase text-xs">Keranjang</h3>
                         <button onclick="resetCart()" class="text-red-500 font-bold text-[10px] px-3 py-1 border rounded-full bg-white">Reset</button>
                     </div>
-                    <div id="cartList" class="p-4 space-y-4 max-h-[40vh] overflow-y-auto"></div>
-                    <div id="emptyCart" class="py-12 text-center text-gray-300 flex flex-col items-center">
-                        <i class="fas fa-shopping-cart text-5xl mb-2 opacity-10"></i>
-                        <p class="text-[10px] font-bold uppercase tracking-widest">Kosong</p>
+                    
+                    <div id="cartList" class="p-4 space-y-3 max-h-[30vh] overflow-y-auto bg-white"></div>
+                    
+                    <div id="emptyCart" class="py-8 text-center text-gray-300 flex flex-col items-center">
+                        <i class="fas fa-shopping-cart text-4xl mb-2 opacity-10"></i>
+                        <p class="text-[9px] font-bold uppercase tracking-widest">Belum ada barang</p>
                     </div>
+
                     <div class="p-6 bg-blue-50 border-t-2 border-dashed border-blue-100">
-                        <div class="flex justify-between items-center mb-4"><span class="text-gray-500 font-bold text-xs uppercase">Total</span><span id="totalHarga" class="text-3xl font-black text-blue-700">Rp 0</span></div>
-                        <input type="number" id="inputBayar" oninput="hitungKembalian()" placeholder="Uang Bayar" class="w-full p-5 bg-white rounded-2xl border-2 border-blue-100 focus:border-blue-600 outline-none text-2xl font-black mb-4">
-                        <div class="flex justify-between items-center p-5 bg-white rounded-2xl shadow-sm mb-4"><span class="text-[10px] font-black text-gray-400 uppercase">Kembali</span><span id="textKembalian" class="text-2xl font-black text-green-600">Rp 0</span></div>
-                        <button onclick="prosesTransaksi()" class="w-full bg-blue-600 text-white py-5 rounded-[1.5rem] font-black text-xl shadow-xl active:scale-95 transition uppercase">Simpan & Cetak</button>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-gray-500 font-bold text-xs uppercase">Total</span>
+                            <span id="totalHarga" class="text-2xl font-black text-blue-700">Rp 0</span>
+                        </div>
+                        <input type="number" id="inputBayar" oninput="hitungKembalian()" placeholder="Uang Bayar" class="w-full p-4 bg-white rounded-2xl border-2 border-blue-100 focus:border-blue-600 outline-none text-xl font-black mb-3 text-center">
+                        <div class="flex justify-between items-center p-4 bg-white rounded-2xl shadow-sm mb-4">
+                            <span class="text-[9px] font-black text-gray-400 uppercase">Kembali</span>
+                            <span id="textKembalian" class="text-xl font-black text-green-600">Rp 0</span>
+                        </div>
+                        <button onclick="prosesTransaksi()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black text-lg shadow-lg active:scale-95 transition uppercase tracking-tighter">Simpan & Cetak</button>
                     </div>
                 </div>
             </div>
@@ -111,26 +128,26 @@
 
         <section id="sectionAdmin" class="hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                <div>
-                    <h3 class="text-xl font-black text-gray-800 uppercase">Stok Barang</h3>
-                </div>
+                <div><h3 class="text-xl font-black text-gray-800 uppercase">Stok Barang</h3></div>
                 <div class="flex gap-2 w-full md:w-auto">
                     <input type="text" id="searchGudang" onkeyup="renderAdminTable()" placeholder="Cari..." class="flex-1 md:w-64 p-3 bg-white border rounded-2xl text-xs font-bold">
                     <button onclick="openModalBarang()" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase">Tambah</button>
                 </div>
             </div>
             <div class="bg-white rounded-[2.5rem] shadow-sm border overflow-hidden">
-                <table class="w-full text-left">
-                    <thead class="bg-gray-50 border-b">
-                        <tr>
-                            <th class="p-6 text-[10px] font-black text-gray-400 uppercase">Produk</th>
-                            <th class="p-6 text-[10px] font-black text-gray-400 uppercase">Harga</th>
-                            <th class="p-6 text-[10px] font-black text-gray-400 uppercase">Stok</th>
-                            <th class="p-6 text-[10px] font-black text-gray-400 uppercase text-center">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminTableBody" class="divide-y divide-gray-100"></tbody>
-                </table>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead class="bg-gray-50 border-b">
+                            <tr>
+                                <th class="p-6 text-[10px] font-black text-gray-400 uppercase">Produk</th>
+                                <th class="p-6 text-[10px] font-black text-gray-400 uppercase">Harga</th>
+                                <th class="p-6 text-[10px] font-black text-gray-400 uppercase">Stok</th>
+                                <th class="p-6 text-[10px] font-black text-gray-400 uppercase text-center">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTableBody" class="divide-y divide-gray-100"></tbody>
+                    </table>
+                </div>
             </div>
         </section>
     </main>
@@ -208,7 +225,7 @@
                 const itm = masterBarang[key];
                 if (itm.nama.toLowerCase().includes(search)) {
                     let sClass = itm.stok <= 0 ? "bg-red-500 text-white" : (itm.stok < 10 ? "bg-yellow-500 text-black" : "bg-green-500 text-white");
-                    grid.innerHTML += `<div onclick="addToCart('${key}')" class="bg-white p-5 rounded-[2rem] border-2 border-transparent active:border-blue-500 shadow-sm active:scale-95 transition"><h4 class="font-black text-gray-800 text-xs truncate uppercase">${itm.nama}</h4><p class="text-blue-700 font-extrabold text-base mt-1">Rp ${itm.hargaPcs.toLocaleString()}</p><div class="mt-4"><span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${sClass}">Stok: ${itm.stok}</span></div></div>`;
+                    grid.innerHTML += `<div onclick="addToCart('${key}')" class="bg-white p-4 rounded-2xl border-2 border-transparent active:border-blue-500 shadow-sm active:scale-95 transition"><h4 class="font-black text-gray-800 text-[10px] truncate uppercase mb-1">${itm.nama}</h4><p class="text-blue-700 font-extrabold text-sm">Rp ${itm.hargaPcs.toLocaleString()}</p><div class="mt-2"><span class="px-2 py-0.5 rounded-full text-[8px] font-black uppercase ${sClass}">Stok: ${itm.stok}</span></div></div>`;
                 }
             });
         }
@@ -233,21 +250,21 @@
                 const bClr = !isPcs ? 'bg-green-500 text-white font-black' : 'bg-gray-100 text-gray-400';
 
                 list.innerHTML += `
-                <div class="bg-white p-4 rounded-2xl border shadow-sm">
-                    <div class="flex justify-between font-black text-[10px] uppercase text-gray-700">
+                <div class="bg-white p-3 rounded-xl border shadow-sm">
+                    <div class="flex justify-between font-black text-[9px] uppercase text-gray-700 mb-1">
                         <span>${itm.nama}</span>
-                        <button onclick="removeItem(${idx})" class="text-red-300 p-1"><i class="fas fa-times"></i></button>
+                        <button onclick="removeItem(${idx})" class="text-red-300"><i class="fas fa-times"></i></button>
                     </div>
-                    <div class="text-[9px] font-bold ${isPcs ? 'text-blue-600' : 'text-green-600'} mb-2 uppercase">@Rp ${currentPrice.toLocaleString()}</div>
+                    <div class="text-[8px] font-bold ${isPcs ? 'text-blue-600' : 'text-green-600'} mb-2 uppercase">@Rp ${currentPrice.toLocaleString()}</div>
                     <div class="flex justify-between items-center">
-                        <div class="flex gap-1 bg-gray-100 p-1 rounded-lg">
-                            <button onclick="changeMode(${idx},'pcs')" class="text-[9px] px-3 py-1 rounded ${pClr}">PCS</button>
-                            <button onclick="changeMode(${idx},'box')" class="text-[9px] px-3 py-1 rounded ${bClr}">BOX</button>
+                        <div class="flex gap-1 bg-gray-100 p-0.5 rounded">
+                            <button onclick="changeMode(${idx},'pcs')" class="text-[8px] px-2 py-1 rounded ${pClr}">PCS</button>
+                            <button onclick="changeMode(${idx},'box')" class="text-[8px] px-2 py-1 rounded ${bClr}">BOX</button>
                         </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="updateQty(${idx},-1)" class="w-8 h-8 bg-gray-100 rounded-lg">-</button>
-                            <span class="font-black text-gray-800">${itm.qty}</span>
-                            <button onclick="updateQty(${idx},1)" class="w-8 h-8 bg-blue-600 text-white rounded-lg">+</button>
+                        <div class="flex items-center gap-2">
+                            <button onclick="updateQty(${idx},-1)" class="w-7 h-7 bg-gray-100 rounded-lg text-xs">-</button>
+                            <span class="font-black text-gray-800 text-xs">${itm.qty}</span>
+                            <button onclick="updateQty(${idx},1)" class="w-7 h-7 bg-blue-600 text-white rounded-lg text-xs">+</button>
                         </div>
                     </div>
                 </div>`;
@@ -282,11 +299,8 @@
             document.body.appendChild(iframe);
             const doc = iframe.contentWindow.document;
             const itemsHtml = trx.items.map(i => `<div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span>${i.nama} (x${i.qty})</span><span>${((i.mode === 'pcs' ? i.hargaPcs : i.hargaBox) * i.qty).toLocaleString()}</span></div>`).join('');
-            
             doc.write(`<html><head><style>@page{size:58mm auto;margin:0}body{width:48mm;margin:2mm;font-family:monospace;font-size:10px;line-height:1.2}.text-center{text-align:center}.line{border-top:1px dashed #000;margin:5px 0}.flex-between{display:flex;justify-content:space-between}</style></head><body><div class="text-center"><strong>TOKO AMALIA</strong><br>Jl. Kariango-Carangki<br>${new Date(trx.timestamp).toLocaleString('id-ID')}</div><div class="line"></div>${itemsHtml}<div class="line"></div><div class="flex-between"><strong>TOTAL</strong><strong>${trx.total.toLocaleString()}</strong></div><div class="flex-between">BAYAR<span>${trx.bayar.toLocaleString()}</span></div><div class="flex-between">KEMBALI<span>${trx.kembali.toLocaleString()}</span></div><div class="line"></div><div class="text-center">Kasir: ${trx.kasir}<br>Terima Kasih!</div></body></html>`);
             doc.close();
-
-            // Optimasi Cetak HP: Tunggu iframe selesai load lalu print
             iframe.onload = function() {
                 iframe.contentWindow.focus();
                 iframe.contentWindow.print();
