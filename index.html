@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AMALIA POS PRO - Final Fix</title>
+    <title>AMALIA POS PRO - Final Stable</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
@@ -108,31 +108,7 @@
         </div>
 
         <div id="sec-history" class="section-page hidden h-full overflow-y-auto p-4"><div class="max-w-md mx-auto space-y-3" id="history-list"></div></div>
-        
-        <div id="sec-laporan" class="section-page hidden h-full overflow-y-auto p-4">
-             <div class="max-w-md mx-auto space-y-4">
-                <div class="grid grid-cols-2 gap-3 text-center">
-                    <div class="glass-card p-4 rounded-xl border-l-4 border-blue-500">
-                        <p class="text-[8px] text-blue-400 font-black uppercase">Omzet Total</p>
-                        <h1 id="omzet-all" class="text-sm font-black font-mono-price">Rp 0</h1>
-                    </div>
-                    <div class="glass-card p-4 rounded-xl border-l-4 border-emerald-500">
-                        <p class="text-[8px] text-slate-500 font-black uppercase">Total Trx</p>
-                        <h1 id="all-count-total" class="text-sm font-black">0</h1>
-                    </div>
-                </div>
-                <div class="glass-card p-4 rounded-xl space-y-3">
-                    <div class="flex gap-2">
-                        <input type="date" id="pick-day" onchange="filterLaporan()" class="flex-1 text-xs font-bold">
-                        <input type="month" id="pick-month" onchange="filterLaporan()" class="flex-1 text-xs font-bold">
-                    </div>
-                    <div class="border-t border-white/5 pt-3 flex justify-between items-center">
-                        <p class="text-[10px] text-yellow-500 font-bold uppercase">Hasil: <span id="lap-count" class="text-white">0</span></p>
-                        <h2 id="lap-omzet" class="text-lg font-black font-mono-price text-blue-400">Rp 0</h2>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div id="sec-laporan" class="section-page hidden h-full overflow-y-auto p-4"><div class="max-w-md mx-auto space-y-4" id="lap-content"></div></div>
 
         <div id="sec-admin" class="section-page hidden h-full overflow-y-auto p-4">
             <div class="max-w-md mx-auto space-y-6">
@@ -194,17 +170,19 @@
         firebase.initializeApp(config);
         const db = firebase.firestore();
 
-        let dataBarang = [], dataTransaksi = [], keranjang = [], userAktif = '', userRole = '', lastTransactionId = null;
+        let dataBarang = [], dataTransaksi = [], keranjang = [], userAktif = '', userRole = '';
 
-        // FUNGSI PALING PENTING - DISEDERHANAKAN
+        // --- SOLUSI PERMANEN HARGA ---
         const formatIDR = (n) => {
-            return new Intl.NumberFormat('id-ID').format(Number(n) || 0);
+            const val = Math.round(Number(n)) || 0;
+            return val.toLocaleString('id-ID');
         };
         
         const toNum = (val) => {
             if (!val) return 0;
-            // Hapus titik ribuan dan pastikan hanya angka yang tersisa
-            return parseInt(val.toString().replace(/\./g, '')) || 0;
+            // Hanya ambil digit angka (0-9), abaikan titik, koma, atau Rp
+            const cleaned = val.toString().replace(/\D/g, '');
+            return parseInt(cleaned) || 0;
         };
 
         function formatMoneyInput(el) {
@@ -249,12 +227,7 @@
             db.collection("barang").onSnapshot(snap => {
                 dataBarang = snap.docs.map(d => {
                     const itm = d.data();
-                    return { 
-                        id: d.id, 
-                        nama: itm.nama, 
-                        ecer: Number(itm.ecer) || 0, 
-                        stok: Number(itm.stok) || 0 
-                    };
+                    return { id: d.id, ...itm, ecer: toNum(itm.ecer), stok: Number(itm.stok) || 0 };
                 });
                 renderAdminTable();
             });
@@ -280,7 +253,7 @@
                 <div onclick="addToCart('${b.id}')" class="p-4 border-b border-white/5 flex justify-between items-center active:bg-blue-600">
                     <div>
                         <p class="text-sm font-bold uppercase text-white">${b.nama}</p>
-                        <p class="text-xs text-blue-400 font-mono-price">Rp ${formatIDR(b.ecer)}</p>
+                        <p class="text-xs text-blue-400 font-mono-price font-bold">Rp ${formatIDR(b.ecer)}</p>
                     </div>
                     <span class="badge-stok ${b.stok < 5 ? 'badge-stok-low' : ''}">${b.stok}</span>
                 </div>
@@ -394,11 +367,7 @@
             area.innerHTML = `
                 <center><h2 style="margin:0">AMALIA STORE</h2></center>
                 <hr style="border:0.5px dashed #000">
-                <div style="font-size:9px">
-                    ID: ${trx.idTrx}<br>
-                    KSR: ${trx.kasir}<br>
-                    JAM: ${new Date(trx.waktu).toLocaleString()}
-                </div>
+                <div style="font-size:9px">ID: ${trx.idTrx}<br>KSR: ${trx.kasir}<br>${new Date(trx.waktu).toLocaleString()}</div>
                 <hr style="border:0.5px dashed #000">
                 ${trx.items.map(i => `<div style="display:flex;justify-content:space-between;font-size:9px"><span>${i.nama} x${i.qty}</span><span>${formatIDR(i.qty*i.ecer)}</span></div>`).join('')}
                 <hr style="border:0.5px dashed #000">
@@ -420,20 +389,19 @@
         }
 
         function updateLaporan() {
-            const totalOmzet = dataTransaksi.reduce((a, b) => a + Number(b.total), 0);
-            document.getElementById('omzet-all').innerText = `Rp ${formatIDR(totalOmzet)}`;
-            document.getElementById('all-count-total').innerText = dataTransaksi.length;
-            filterLaporan();
-        }
-
-        function filterLaporan() {
-            const day = document.getElementById('pick-day').value;
-            const month = document.getElementById('pick-month').value;
-            let filtered = dataTransaksi;
-            if(day) filtered = filtered.filter(t => new Date(t.waktu).toISOString().split('T')[0] === day);
-            else if(month) filtered = filtered.filter(t => new Date(t.waktu).toISOString().slice(0, 7) === month);
-            document.getElementById('lap-count').innerText = filtered.length;
-            document.getElementById('lap-omzet').innerText = `Rp ${formatIDR(filtered.reduce((a, b) => a + Number(b.total), 0))}`;
+            const totalOmzet = dataTransaksi.reduce((a, b) => a + toNum(b.total), 0);
+            document.getElementById('lap-content').innerHTML = `
+                <div class="grid grid-cols-2 gap-3 text-center">
+                    <div class="glass-card p-4 rounded-xl border-l-4 border-blue-500">
+                        <p class="text-[8px] text-blue-400 font-black uppercase">Omzet Total</p>
+                        <h1 class="text-sm font-black font-mono-price">Rp ${formatIDR(totalOmzet)}</h1>
+                    </div>
+                    <div class="glass-card p-4 rounded-xl border-l-4 border-emerald-500">
+                        <p class="text-[8px] text-slate-500 font-black uppercase">Total Trx</p>
+                        <h1 class="text-sm font-black">${dataTransaksi.length}</h1>
+                    </div>
+                </div>
+            `;
         }
 
         async function simpanBarang() {
