@@ -7,7 +7,7 @@
     <meta http-equiv="Pragma" content="no-cache">
     <meta http-equiv="Expires" content="0">
     
-    <title>TOKO AMALIA - POS System</title>
+    <title>TOKO AMALIA - POS System Premium</title>
     
     <script src="https://cdn.tailwindcss.com?v=1.0.8"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css?v=1.0.8" rel="stylesheet">
@@ -16,51 +16,83 @@
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; -webkit-tap-highlight-color: transparent; }
-        .active-nav { color: #2563eb; border-top: 4px solid #2563eb; background: #eff6ff; }
-        .active-tab { background-color: #2563eb !important; color: white !important; }
-        .hidden { display: none; }
-        .stok-aman { color: #16a34a; font-weight: 800; }
-        .stok-tipis { color: #ca8a04; font-weight: 800; }
-        .stok-habis { color: #dc2626; font-weight: 800; }
         
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        :root {
+            --bg-dark: #0f172a;
+            --card-dark: #1e293b;
+            --accent-blue: #3b82f6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg-dark); 
+            color: var(--text-main);
+            -webkit-tap-highlight-color: transparent; 
+        }
+
+        .active-nav { 
+            color: #60a5fa; 
+            border-top: 4px solid #60a5fa; 
+            background: rgba(59, 130, 246, 0.1); 
+        }
+
+        .active-tab { 
+            background-color: #3b82f6 !important; 
+            color: white !important; 
+        }
+
+        .hidden { display: none; }
+        
+        .stok-aman { color: #4ade80; font-weight: 800; }
+        .stok-tipis { color: #fbbf24; font-weight: 800; }
+        .stok-habis { color: #f87171; font-weight: 800; }
+        
+        /* Custom Scrollbar Dark */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+
+        .glass-card {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
 
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
 <body class="pb-24">
 
-    <div id="loginPage" class="fixed inset-0 z-[100] flex items-center justify-center bg-blue-900 p-4">
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md text-center">
-            <div class="w-16 h-16 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center mx-auto mb-4">
+    <div id="loginPage" class="fixed inset-0 z-[100] flex items-center justify-center bg-[#020617] p-4">
+        <div class="bg-[#1e293b] p-8 rounded-[2.5rem] shadow-2xl w-full max-w-md text-center border border-slate-700">
+            <div class="w-16 h-16 bg-blue-500/10 text-blue-400 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-blue-500/20">
                 <i class="fas fa-store text-3xl"></i>
             </div>
-            <h1 class="text-3xl font-black text-gray-800 tracking-tighter uppercase leading-none">Toko Amalia</h1>
-            <p class="text-[10px] text-gray-500 font-bold mt-2 leading-tight uppercase px-4">Jl. Poros Carangki-Kariango depan DDI Lekopancing</p>
+            <h1 class="text-3xl font-black text-white tracking-tighter uppercase leading-none">Toko Amalia</h1>
+            <p class="text-[10px] text-slate-400 font-bold mt-2 leading-tight uppercase px-4">Jl. Poros Carangki-Kariango depan DDI Lekopancing</p>
             <div class="mt-8 space-y-4">
-                <input type="text" id="loginName" placeholder="Nama Kasir" class="w-full p-4 bg-gray-100 rounded-2xl border-none focus:ring-2 focus:ring-blue-600 text-lg font-bold">
-                <button onclick="login('kasir')" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black shadow-lg">MASUK KASIR</button>
-                <div class="py-2"><span class="text-[10px] text-gray-300 font-black uppercase tracking-widest">Administrator</span></div>
-                <input type="password" id="loginPass" placeholder="Password Admin" class="w-full p-4 bg-gray-50 rounded-2xl border-none text-center">
-                <button onclick="login('admin')" class="w-full bg-gray-800 text-white py-3 rounded-2xl font-bold text-sm">AKSES ADMIN</button>
+                <input type="text" id="loginName" placeholder="Nama Kasir" class="w-full p-4 bg-slate-800 text-white rounded-2xl border border-slate-700 focus:ring-2 focus:ring-blue-500 outline-none text-lg font-bold">
+                <button onclick="login('kasir')" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-4 rounded-2xl font-black shadow-lg transition">MASUK KASIR</button>
+                <div class="py-2"><span class="text-[10px] text-slate-500 font-black uppercase tracking-widest">Administrator</span></div>
+                <input type="password" id="loginPass" placeholder="Password Admin" class="w-full p-4 bg-slate-900/50 text-white rounded-2xl border border-slate-800 text-center outline-none">
+                <button onclick="login('admin')" class="w-full bg-slate-700 hover:bg-slate-600 text-white py-3 rounded-2xl font-bold text-sm transition">AKSES ADMIN</button>
             </div>
         </div>
     </div>
 
-    <header class="bg-white p-4 shadow-md sticky top-0 z-40 flex justify-between items-center no-print">
+    <header class="bg-[#1e293b]/80 backdrop-blur-md p-4 shadow-xl border-b border-slate-700 sticky top-0 z-40 flex justify-between items-center no-print">
         <div class="flex items-center gap-4">
             <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg"><i class="fas fa-shopping-bag text-xl"></i></div>
             <div>
-                <h2 class="text-xl font-extrabold text-gray-900 leading-none uppercase">Toko Amalia</h2>
-                <p class="text-[8px] text-gray-400 font-bold uppercase">Jl. Poros Carangki-Kariango depan DDI Lekopancing</p>
+                <h2 class="text-xl font-extrabold text-white leading-none uppercase">Toko Amalia</h2>
+                <p class="text-[8px] text-slate-400 font-bold uppercase">Jl. Poros Carangki-Kariango depan DDI Lekopancing</p>
             </div>
         </div>
         <div class="text-right">
-             <p id="userNameDisplay" class="text-[12px] text-blue-600 font-black uppercase tracking-tighter"></p>
-             <button onclick="location.reload(true)" class="text-red-500 text-[10px] font-bold px-2 py-1 bg-red-50 rounded-lg">Logout</button>
+             <p id="userNameDisplay" class="text-[12px] text-blue-400 font-black uppercase tracking-tighter"></p>
+             <button onclick="location.reload(true)" class="text-red-400 text-[10px] font-bold px-2 py-1 bg-red-400/10 rounded-lg hover:bg-red-400/20">Logout</button>
         </div>
     </header>
 
@@ -69,8 +101,8 @@
             
             <div class="lg:col-span-7 flex flex-col">
                 <div class="relative mb-4">
-                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                    <input type="text" id="searchBarang" onkeyup="renderKasirItems()" placeholder="Cari barang..." class="w-full p-4 pl-14 bg-white rounded-2xl shadow-sm border-none focus:ring-2 focus:ring-blue-600 text-lg font-bold">
+                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-500"></i>
+                    <input type="text" id="searchBarang" onkeyup="renderKasirItems()" placeholder="Cari barang..." class="w-full p-4 pl-14 bg-[#1e293b] text-white rounded-2xl shadow-sm border border-slate-700 focus:ring-2 focus:ring-blue-600 text-lg font-bold outline-none">
                 </div>
                 
                 <div id="itemGrid" class="grid grid-cols-2 md:grid-cols-3 gap-3 overflow-y-auto max-h-[40vh] lg:max-h-[70vh] pb-4 px-1">
@@ -78,30 +110,30 @@
             </div>
 
             <div class="lg:col-span-5">
-                <div class="bg-white rounded-[2.5rem] shadow-xl border flex flex-col h-fit sticky top-24 overflow-hidden">
-                    <div class="p-5 border-b flex justify-between items-center bg-gray-50">
-                        <h3 class="font-black text-gray-800 uppercase text-sm">Keranjang</h3>
-                        <button onclick="resetCart()" class="text-red-500 font-bold text-[11px] px-3 py-1 border rounded-full bg-white">Reset</button>
+                <div class="bg-[#1e293b] rounded-[2.5rem] shadow-2xl border border-slate-700 flex flex-col h-fit sticky top-24 overflow-hidden">
+                    <div class="p-5 border-b border-slate-700 flex justify-between items-center bg-slate-800/50">
+                        <h3 class="font-black text-slate-200 uppercase text-sm">Keranjang</h3>
+                        <button onclick="resetCart()" class="text-red-400 font-bold text-[11px] px-3 py-1 border border-red-400/30 rounded-full bg-red-400/5 hover:bg-red-400/10">Reset</button>
                     </div>
                     
-                    <div id="cartList" class="p-4 space-y-3 max-h-[30vh] overflow-y-auto bg-white"></div>
+                    <div id="cartList" class="p-4 space-y-3 max-h-[30vh] overflow-y-auto bg-transparent"></div>
                     
-                    <div id="emptyCart" class="py-8 text-center text-gray-300 flex flex-col items-center">
-                        <i class="fas fa-shopping-cart text-4xl mb-2 opacity-10"></i>
+                    <div id="emptyCart" class="py-8 text-center text-slate-600 flex flex-col items-center">
+                        <i class="fas fa-shopping-cart text-4xl mb-2 opacity-20"></i>
                         <p class="text-[11px] font-bold uppercase tracking-widest">Belum ada barang</p>
                     </div>
 
-                    <div class="p-6 bg-blue-50 border-t-2 border-dashed border-blue-100">
+                    <div class="p-6 bg-[#1e293b] border-t-2 border-dashed border-slate-700">
                         <div class="flex justify-between items-center mb-3">
-                            <span class="text-gray-500 font-bold text-sm uppercase">Total</span>
-                            <span id="totalHarga" class="text-4xl font-black text-blue-700">Rp 0</span>
+                            <span class="text-slate-400 font-bold text-sm uppercase">Total</span>
+                            <span id="totalHarga" class="text-4xl font-black text-blue-400">Rp 0</span>
                         </div>
-                        <input type="number" id="inputBayar" oninput="hitungKembalian()" placeholder="Uang Bayar" class="w-full p-5 bg-white rounded-2xl border-2 border-blue-100 focus:border-blue-600 outline-none text-3xl font-black mb-3 text-center">
-                        <div class="flex justify-between items-center p-4 bg-white rounded-2xl shadow-sm mb-4">
-                            <span class="text-[11px] font-black text-gray-400 uppercase">Kembali</span>
-                            <span id="textKembalian" class="text-2xl font-black text-green-600">Rp 0</span>
+                        <input type="number" id="inputBayar" oninput="hitungKembalian()" placeholder="Uang Bayar" class="w-full p-5 bg-slate-800 text-white rounded-2xl border-2 border-slate-700 focus:border-blue-500 outline-none text-3xl font-black mb-3 text-center">
+                        <div class="flex justify-between items-center p-4 bg-slate-900 rounded-2xl shadow-inner mb-4">
+                            <span class="text-[11px] font-black text-slate-500 uppercase">Kembali</span>
+                            <span id="textKembalian" class="text-2xl font-black text-emerald-400">Rp 0</span>
                         </div>
-                        <button onclick="prosesTransaksi()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl shadow-xl active:scale-95 transition uppercase tracking-tighter">Simpan & Cetak</button>
+                        <button onclick="prosesTransaksi()" class="w-full bg-blue-600 hover:bg-blue-500 text-white py-5 rounded-2xl font-black text-xl shadow-xl active:scale-95 transition uppercase tracking-tighter">Simpan & Cetak</button>
                     </div>
                 </div>
             </div>
@@ -109,15 +141,15 @@
 
         <section id="sectionHistory" class="hidden">
             <div class="flex flex-col gap-4 mb-8">
-                <div class="flex bg-white p-2 rounded-2xl shadow-sm border gap-2">
+                <div class="flex bg-[#1e293b] p-2 rounded-2xl shadow-sm border border-slate-700 gap-2">
                     <button id="btnDaily" onclick="filterLaporan('daily')" class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase active-tab">Harian</button>
-                    <button id="btnMonthly" onclick="filterLaporan('monthly')" class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase bg-gray-50 text-gray-400">Bulanan</button>
-                    <button id="btnYearly" onclick="filterLaporan('yearly')" class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase bg-gray-50 text-gray-400">Tahunan</button>
+                    <button id="btnMonthly" onclick="filterLaporan('monthly')" class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase bg-slate-800 text-slate-500">Bulanan</button>
+                    <button id="btnYearly" onclick="filterLaporan('yearly')" class="flex-1 py-3 rounded-xl font-black text-[11px] uppercase bg-slate-800 text-slate-500">Tahunan</button>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
                     <div id="filterInputContainer" class="flex gap-2"></div>
-                    <div class="bg-blue-900 text-white p-5 rounded-2xl flex justify-between items-center shadow-lg">
-                        <div><p class="text-[11px] font-black uppercase opacity-60">Omset</p><h4 id="totalOmset" class="text-3xl font-black">Rp 0</h4></div>
+                    <div class="bg-gradient-to-br from-blue-900 to-slate-900 text-white p-5 rounded-2xl flex justify-between items-center shadow-lg border border-blue-500/20">
+                        <div><p class="text-[11px] font-black uppercase opacity-60">Omset</p><h4 id="totalOmset" class="text-3xl font-black text-blue-400">Rp 0</h4></div>
                         <i class="fas fa-wallet text-2xl opacity-20"></i>
                     </div>
                 </div>
@@ -127,59 +159,59 @@
 
         <section id="sectionAdmin" class="hidden">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
-                <div><h3 class="text-xl font-black text-gray-800 uppercase">Stok Barang</h3></div>
+                <div><h3 class="text-xl font-black text-white uppercase">Stok Barang</h3></div>
                 <div class="flex gap-2 w-full md:w-auto">
-                    <input type="text" id="searchGudang" onkeyup="renderAdminTable()" placeholder="Cari..." class="flex-1 md:w-64 p-3 bg-white border rounded-2xl text-sm font-bold">
-                    <button onclick="openModalBarang()" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-sm uppercase">Tambah</button>
+                    <input type="text" id="searchGudang" onkeyup="renderAdminTable()" placeholder="Cari..." class="flex-1 md:w-64 p-3 bg-[#1e293b] text-white border border-slate-700 rounded-2xl text-sm font-bold outline-none">
+                    <button onclick="openModalBarang()" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-black text-sm uppercase hover:bg-blue-500 transition">Tambah</button>
                 </div>
             </div>
-            <div class="bg-white rounded-[2.5rem] shadow-sm border overflow-hidden">
+            <div class="bg-[#1e293b] rounded-[2.5rem] shadow-sm border border-slate-700 overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="w-full text-left">
-                        <thead class="bg-gray-50 border-b">
+                        <thead class="bg-slate-800 border-b border-slate-700">
                             <tr>
-                                <th class="p-6 text-[11px] font-black text-gray-400 uppercase">Produk</th>
-                                <th class="p-6 text-[11px] font-black text-gray-400 uppercase">Harga</th>
-                                <th class="p-6 text-[11px] font-black text-gray-400 uppercase">Stok</th>
-                                <th class="p-6 text-[11px] font-black text-gray-400 uppercase text-center">Aksi</th>
+                                <th class="p-6 text-[11px] font-black text-slate-400 uppercase">Produk</th>
+                                <th class="p-6 text-[11px] font-black text-slate-400 uppercase">Harga</th>
+                                <th class="p-6 text-[11px] font-black text-slate-400 uppercase">Stok</th>
+                                <th class="p-6 text-[11px] font-black text-slate-400 uppercase text-center">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody id="adminTableBody" class="divide-y divide-gray-100"></tbody>
+                        <tbody id="adminTableBody" class="divide-y divide-slate-700/50"></tbody>
                     </table>
                 </div>
             </div>
         </section>
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t px-6 py-4 flex justify-around items-center z-40 shadow-lg no-print">
-        <button onclick="showSection('Kasir')" class="flex flex-col items-center gap-1 nav-btn active-nav px-4 py-2 rounded-2xl" id="navKasir"><i class="fas fa-cash-register text-xl"></i><span class="text-[10px] font-black uppercase">Kasir</span></button>
-        <button onclick="showSection('History')" class="flex flex-col items-center gap-1 nav-btn text-gray-400 px-4 py-2 rounded-2xl" id="navHistory"><i class="fas fa-history text-xl"></i><span class="text-[10px] font-black uppercase">Laporan</span></button>
-        <button id="adminNavBtn" onclick="showSection('Admin')" class="flex flex-col items-center gap-1 nav-btn text-gray-400 px-4 py-2 rounded-2xl hidden"><i class="fas fa-boxes text-xl"></i><span class="text-[10px] font-black uppercase">Gudang</span></button>
+    <nav class="fixed bottom-0 left-0 right-0 bg-[#1e293b]/90 backdrop-blur-lg border-t border-slate-700 px-6 py-4 flex justify-around items-center z-40 shadow-[0_-10px_20px_rgba(0,0,0,0.3)] no-print">
+        <button onclick="showSection('Kasir')" class="flex flex-col items-center gap-1 nav-btn active-nav px-4 py-2 rounded-2xl transition" id="navKasir"><i class="fas fa-cash-register text-xl"></i><span class="text-[10px] font-black uppercase">Kasir</span></button>
+        <button onclick="showSection('History')" class="flex flex-col items-center gap-1 nav-btn text-slate-500 px-4 py-2 rounded-2xl transition" id="navHistory"><i class="fas fa-history text-xl"></i><span class="text-[10px] font-black uppercase">Laporan</span></button>
+        <button id="adminNavBtn" onclick="showSection('Admin')" class="flex flex-col items-center gap-1 nav-btn text-slate-500 px-4 py-2 rounded-2xl hidden transition" id="adminNavBtn"><i class="fas fa-boxes text-xl"></i><span class="text-[10px] font-black uppercase">Gudang</span></button>
     </nav>
 
-    <div id="modalBarang" class="fixed inset-0 z-[60] bg-black/60 flex items-center justify-center p-4 hidden no-print">
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] p-10">
-            <h3 class="text-xl font-black mb-6 uppercase" id="modalTitle">Data Barang</h3>
+    <div id="modalBarang" class="fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-[#1e293b] w-full max-w-md rounded-[2.5rem] p-10 border border-slate-700">
+            <h3 class="text-xl font-black mb-6 uppercase text-white" id="modalTitle">Data Barang</h3>
             <div class="space-y-4">
                 <input type="hidden" id="editKey">
-                <input type="text" id="formNama" placeholder="Nama Produk" class="w-full p-4 bg-gray-50 rounded-2xl font-bold uppercase outline-none text-lg">
+                <input type="text" id="formNama" placeholder="Nama Produk" class="w-full p-4 bg-slate-800 text-white rounded-2xl font-bold uppercase outline-none text-lg border border-slate-700">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="number" id="formHargaPcs" placeholder="Harga Pcs" class="w-full p-4 bg-gray-50 rounded-2xl font-bold text-blue-600 outline-none text-lg">
-                    <input type="number" id="formHargaBox" placeholder="Harga Box" class="w-full p-4 bg-gray-50 rounded-2xl font-bold text-green-600 outline-none text-lg">
+                    <input type="number" id="formHargaPcs" placeholder="Harga Pcs" class="w-full p-4 bg-slate-800 text-blue-400 rounded-2xl font-bold outline-none text-lg border border-slate-700">
+                    <input type="number" id="formHargaBox" placeholder="Harga Box" class="w-full p-4 bg-slate-800 text-emerald-400 rounded-2xl font-bold outline-none text-lg border border-slate-700">
                 </div>
-                <input type="number" id="formStok" placeholder="Jumlah Stok" class="w-full p-4 bg-gray-50 rounded-2xl font-bold outline-none text-lg">
-                <button onclick="saveBarang()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase text-lg">Simpan</button>
-                <button onclick="closeModalBarang()" class="w-full text-gray-400 font-bold py-2 text-sm uppercase">Batal</button>
+                <input type="number" id="formStok" placeholder="Jumlah Stok" class="w-full p-4 bg-slate-800 text-white rounded-2xl font-bold outline-none text-lg border border-slate-700">
+                <button onclick="saveBarang()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black uppercase text-lg hover:bg-blue-500 transition">Simpan</button>
+                <button onclick="closeModalBarang()" class="w-full text-slate-500 font-bold py-2 text-sm uppercase">Batal</button>
             </div>
         </div>
     </div>
 
-    <div id="modalSelesai" class="fixed inset-0 z-[60] bg-black/80 flex items-center justify-center p-4 hidden no-print">
-        <div class="bg-white w-full max-w-sm rounded-[3rem] p-10 text-center">
-            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6"><i class="fas fa-check text-3xl"></i></div>
-            <h3 class="text-xl font-black mb-6 uppercase">Berhasil</h3>
-            <button onclick="printFromLastTrx()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black mb-3 uppercase text-lg">Cetak Struk</button>
-            <button onclick="closeModalSelesai()" class="w-full bg-gray-100 text-gray-600 py-4 rounded-2xl font-bold uppercase">Selesai</button>
+    <div id="modalSelesai" class="fixed inset-0 z-[60] bg-black/90 backdrop-blur-md flex items-center justify-center p-4 hidden no-print">
+        <div class="bg-[#1e293b] w-full max-w-sm rounded-[3rem] p-10 text-center border border-slate-700">
+            <div class="w-16 h-16 bg-emerald-500/10 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-6 border border-emerald-500/20"><i class="fas fa-check text-3xl"></i></div>
+            <h3 class="text-xl font-black mb-6 uppercase text-white">Berhasil</h3>
+            <button onclick="printFromLastTrx()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black mb-3 uppercase text-lg hover:bg-blue-500 transition">Cetak Struk</button>
+            <button onclick="closeModalSelesai()" class="w-full bg-slate-800 text-slate-400 py-4 rounded-2xl font-bold uppercase hover:bg-slate-700 transition">Selesai</button>
         </div>
     </div>
 
@@ -223,8 +255,8 @@
             Object.keys(masterBarang).forEach(key => {
                 const itm = masterBarang[key];
                 if (itm.nama.toLowerCase().includes(search)) {
-                    let sClass = itm.stok <= 0 ? "bg-red-500 text-white" : (itm.stok < 10 ? "bg-yellow-500 text-black" : "bg-green-500 text-white");
-                    grid.innerHTML += `<div onclick="addToCart('${key}')" class="bg-white p-4 rounded-2xl border-2 border-transparent active:border-blue-500 shadow-sm active:scale-95 transition"><h4 class="font-black text-gray-800 text-[12px] truncate uppercase mb-1">${itm.nama}</h4><p class="text-blue-700 font-extrabold text-lg">Rp ${itm.hargaPcs.toLocaleString()}</p><div class="mt-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase ${sClass}">Stok: ${itm.stok}</span></div></div>`;
+                    let sClass = itm.stok <= 0 ? "bg-red-500/20 text-red-400 border-red-500/30" : (itm.stok < 10 ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/30" : "bg-emerald-500/20 text-emerald-400 border-emerald-500/30");
+                    grid.innerHTML += `<div onclick="addToCart('${key}')" class="bg-[#1e293b] p-4 rounded-2xl border border-slate-700 active:border-blue-500 shadow-lg active:scale-95 transition cursor-pointer group hover:bg-slate-800"><h4 class="font-black text-slate-200 text-[12px] truncate uppercase mb-1 group-hover:text-white">${itm.nama}</h4><p class="text-blue-400 font-extrabold text-lg">Rp ${itm.hargaPcs.toLocaleString()}</p><div class="mt-2"><span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase border ${sClass}">Stok: ${itm.stok}</span></div></div>`;
                 }
             });
         }
@@ -245,25 +277,25 @@
                 const isPcs = itm.mode === 'pcs';
                 const currentPrice = isPcs ? itm.hargaPcs : itm.hargaBox;
                 total += (currentPrice * itm.qty);
-                const pClr = isPcs ? 'bg-blue-600 text-white font-black' : 'bg-gray-100 text-gray-400';
-                const bClr = !isPcs ? 'bg-green-500 text-white font-black' : 'bg-gray-100 text-gray-400';
+                const pClr = isPcs ? 'bg-blue-600 text-white font-black' : 'bg-slate-800 text-slate-500';
+                const bClr = !isPcs ? 'bg-emerald-600 text-white font-black' : 'bg-slate-800 text-slate-500';
 
                 list.innerHTML += `
-                <div class="bg-white p-3 rounded-xl border shadow-sm">
-                    <div class="flex justify-between font-black text-[11px] uppercase text-gray-700 mb-1">
+                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700 shadow-sm">
+                    <div class="flex justify-between font-black text-[11px] uppercase text-slate-200 mb-1">
                         <span>${itm.nama}</span>
-                        <button onclick="removeItem(${idx})" class="text-red-300 p-1"><i class="fas fa-times"></i></button>
+                        <button onclick="removeItem(${idx})" class="text-red-400/50 hover:text-red-400 p-1"><i class="fas fa-times"></i></button>
                     </div>
-                    <div class="text-[10px] font-bold ${isPcs ? 'text-blue-600' : 'text-green-600'} mb-2 uppercase">@Rp ${currentPrice.toLocaleString()}</div>
+                    <div class="text-[10px] font-bold ${isPcs ? 'text-blue-400' : 'text-emerald-400'} mb-2 uppercase">@Rp ${currentPrice.toLocaleString()}</div>
                     <div class="flex justify-between items-center">
-                        <div class="flex gap-1 bg-gray-100 p-0.5 rounded">
-                            <button onclick="changeMode(${idx},'pcs')" class="text-[10px] px-3 py-1.5 rounded ${pClr}">PCS</button>
-                            <button onclick="changeMode(${idx},'box')" class="text-[10px] px-3 py-1.5 rounded ${bClr}">BOX</button>
+                        <div class="flex gap-1 bg-slate-900 p-1 rounded-lg">
+                            <button onclick="changeMode(${idx},'pcs')" class="text-[10px] px-3 py-1.5 rounded-md transition ${pClr}">PCS</button>
+                            <button onclick="changeMode(${idx},'box')" class="text-[10px] px-3 py-1.5 rounded-md transition ${bClr}">BOX</button>
                         </div>
                         <div class="flex items-center gap-2">
-                            <button onclick="updateQty(${idx},-1)" class="w-8 h-8 bg-gray-100 rounded-lg text-lg font-bold">-</button>
-                            <span class="font-black text-gray-800 text-sm">${itm.qty}</span>
-                            <button onclick="updateQty(${idx},1)" class="w-8 h-8 bg-blue-600 text-white rounded-lg text-lg font-bold">+</button>
+                            <button onclick="updateQty(${idx},-1)" class="w-8 h-8 bg-slate-700 text-white rounded-lg text-lg font-bold hover:bg-slate-600">-</button>
+                            <span class="font-black text-white text-sm w-4 text-center">${itm.qty}</span>
+                            <button onclick="updateQty(${idx},1)" class="w-8 h-8 bg-blue-600 text-white rounded-lg text-lg font-bold hover:bg-blue-500">+</button>
                         </div>
                     </div>
                 </div>`;
@@ -314,17 +346,17 @@
             currentFilterMode = mode;
             const container = document.getElementById('filterInputContainer');
             const now = new Date();
-            document.querySelectorAll('#sectionHistory button').forEach(b => { if(b.id.includes('btn')) b.classList.remove('active-tab'); b.classList.add('bg-gray-50', 'text-gray-400'); });
+            document.querySelectorAll('#sectionHistory button').forEach(b => { if(b.id.includes('btn')) b.classList.remove('active-tab'); b.classList.add('bg-slate-800', 'text-slate-500'); });
             if(mode === 'daily') {
-                container.innerHTML = `<input type="date" id="filterDate" onchange="applyFilter()" class="bg-white p-4 rounded-2xl border font-bold text-sm flex-1">`;
+                container.innerHTML = `<input type="date" id="filterDate" onchange="applyFilter()" class="bg-slate-800 text-white p-4 rounded-2xl border border-slate-700 font-bold text-sm flex-1 outline-none">`;
                 document.getElementById('filterDate').value = now.toLocaleDateString('en-CA');
                 document.getElementById('btnDaily').classList.add('active-tab');
             } else if(mode === 'monthly') {
-                container.innerHTML = `<input type="month" id="filterMonth" onchange="applyFilter()" class="bg-white p-4 rounded-2xl border font-bold text-sm flex-1">`;
+                container.innerHTML = `<input type="month" id="filterMonth" onchange="applyFilter()" class="bg-slate-800 text-white p-4 rounded-2xl border border-slate-700 font-bold text-sm flex-1 outline-none">`;
                 document.getElementById('filterMonth').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
                 document.getElementById('btnMonthly').classList.add('active-tab');
             } else if(mode === 'yearly') {
-                container.innerHTML = `<select id="filterYear" onchange="applyFilter()" class="bg-white p-4 rounded-2xl border font-bold text-sm flex-1"><option value="${now.getFullYear()}">${now.getFullYear()}</option><option value="${now.getFullYear()-1}">${now.getFullYear()-1}</option></select>`;
+                container.innerHTML = `<select id="filterYear" onchange="applyFilter()" class="bg-slate-800 text-white p-4 rounded-2xl border border-slate-700 font-bold text-sm flex-1 outline-none"><option value="${now.getFullYear()}">${now.getFullYear()}</option><option value="${now.getFullYear()-1}">${now.getFullYear()-1}</option></select>`;
                 document.getElementById('btnYearly').classList.add('active-tab');
             }
             applyFilter();
@@ -346,7 +378,7 @@
                     let match = (currentFilterMode==='daily' && tr.dateStr===val) || (currentFilterMode==='monthly' && tr.monthStr===val) || (currentFilterMode==='yearly' && tr.yearStr===val);
                     if(match) {
                         totalOmset += tr.total;
-                        list.innerHTML += `<div class="bg-white p-5 rounded-[2rem] shadow-sm border flex flex-col"><div class="flex justify-between items-start mb-3 border-b pb-2"><div><span class="text-[10px] font-black text-blue-600 uppercase bg-blue-50 px-2 py-1 rounded">${tr.kasir}</span><p class="text-[10px] text-gray-400 mt-1 font-bold">${new Date(tr.timestamp).toLocaleString('id-ID')}</p></div><button onclick='reprint("${id}")' class="bg-blue-600 w-10 h-10 rounded-xl text-white"><i class="fas fa-print"></i></button></div><div class="space-y-1 mb-3">${tr.items.map(i => `<div class="flex justify-between text-[12px] font-bold text-gray-600"><span>${i.nama} x${i.qty}</span><span>${((i.mode === 'pcs' ? i.hargaPcs : i.hargaBox) * i.qty).toLocaleString()}</span></div>`).join('')}</div><div class="flex justify-between items-center pt-2 border-t-2 border-dashed"><span class="text-[11px] font-black text-gray-400 uppercase">Total</span><span class="text-xl font-black text-gray-900">Rp ${tr.total.toLocaleString()}</span></div></div>`;
+                        list.innerHTML += `<div class="bg-slate-800 p-5 rounded-[2rem] shadow-lg border border-slate-700 flex flex-col"><div class="flex justify-between items-start mb-3 border-b border-slate-700 pb-2"><div><span class="text-[10px] font-black text-blue-400 uppercase bg-blue-400/10 px-2 py-1 rounded">${tr.kasir}</span><p class="text-[10px] text-slate-500 mt-1 font-bold">${new Date(tr.timestamp).toLocaleString('id-ID')}</p></div><button onclick='reprint("${id}")' class="bg-blue-600 hover:bg-blue-500 w-10 h-10 rounded-xl text-white transition"><i class="fas fa-print"></i></button></div><div class="space-y-1 mb-3">${tr.items.map(i => `<div class="flex justify-between text-[12px] font-bold text-slate-300"><span>${i.nama} x${i.qty}</span><span>${((i.mode === 'pcs' ? i.hargaPcs : i.hargaBox) * i.qty).toLocaleString()}</span></div>`).join('')}</div><div class="flex justify-between items-center pt-2 border-t-2 border-dashed border-slate-700"><span class="text-[11px] font-black text-slate-500 uppercase">Total</span><span class="text-xl font-black text-white">Rp ${tr.total.toLocaleString()}</span></div></div>`;
                     }
                 });
                 document.getElementById('totalOmset').innerText = 'Rp ' + totalOmset.toLocaleString();
@@ -363,7 +395,7 @@
                 const itm = masterBarang[key];
                 if (itm.nama.toLowerCase().includes(search)) {
                     let sClass = itm.stok <= 0 ? "stok-habis" : (itm.stok < 10 ? "stok-tipis" : "stok-aman");
-                    body.innerHTML += `<tr><td class="p-6 uppercase text-sm font-black">${itm.nama}</td><td class="p-6"><div class="text-[11px] font-bold text-blue-600">Pcs: ${itm.hargaPcs.toLocaleString()}</div><div class="text-[11px] font-bold text-green-600">Box: ${itm.hargaBox.toLocaleString()}</div></td><td class="p-6"><span class="${sClass} text-lg">${itm.stok}</span></td><td class="p-6 text-center"><button onclick="editBarang('${key}')" class="text-blue-600 mr-3 text-lg"><i class="fas fa-edit"></i></button><button onclick="deleteBarang('${key}')" class="text-red-500 text-lg"><i class="fas fa-trash"></i></button></td></tr>`;
+                    body.innerHTML += `<tr><td class="p-6 uppercase text-sm font-black text-slate-200">${itm.nama}</td><td class="p-6"><div class="text-[11px] font-bold text-blue-400">Pcs: ${itm.hargaPcs.toLocaleString()}</div><div class="text-[11px] font-bold text-emerald-400">Box: ${itm.hargaBox.toLocaleString()}</div></td><td class="p-6"><span class="${sClass} text-lg">${itm.stok}</span></td><td class="p-6 text-center"><button onclick="editBarang('${key}')" class="text-blue-400 hover:text-blue-300 mr-3 text-lg transition"><i class="fas fa-edit"></i></button><button onclick="deleteBarang('${key}')" class="text-red-400 hover:text-red-300 text-lg transition"><i class="fas fa-trash"></i></button></td></tr>`;
                 }
             });
         }
@@ -400,14 +432,18 @@
             ['sectionKasir','sectionHistory','sectionAdmin'].forEach(s => document.getElementById(s).classList.add('hidden'));
             ['navKasir','navHistory','adminNavBtn'].forEach(n => {
                 const btn = document.getElementById(n);
-                btn.classList.remove('active-nav');
-                btn.classList.add('text-gray-400');
+                if(btn) {
+                    btn.classList.remove('active-nav');
+                    btn.classList.add('text-slate-500');
+                }
             });
             document.getElementById('section' + name).classList.remove('hidden');
             const navId = name === 'Admin' ? 'adminNavBtn' : 'nav' + name;
             const activeBtn = document.getElementById(navId);
-            activeBtn.classList.add('active-nav');
-            activeBtn.classList.remove('text-gray-400');
+            if(activeBtn) {
+                activeBtn.classList.add('active-nav');
+                activeBtn.classList.remove('text-slate-500');
+            }
             if(name === 'History') filterLaporan('daily');
         }
     </script>
