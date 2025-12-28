@@ -4,58 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    
     <title>TOKO AMALIA POS</title>
-    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
-        
-        :root {
-            --primary: #4F46E5;
-            --bg-main: #F8FAFC;
-        }
-
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg-main);
-            color: #1E293B;
-            overscroll-behavior-y: contain;
-        }
-
-        .btn-touch {
-            transition: transform 0.1s;
-            -webkit-tap-highlight-color: transparent;
-        }
+        :root { --primary: #4F46E5; --bg-main: #F8FAFC; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg-main); color: #1E293B; overscroll-behavior-y: contain; }
+        .btn-touch { transition: transform 0.1s; -webkit-tap-highlight-color: transparent; }
         .btn-touch:active { transform: scale(0.95); }
-
         .nav-shadow { box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05); }
-
         .active-nav-item { color: var(--primary); }
-        .active-nav-item i { transform: translateY(-4px); transition: all 0.3s ease; }
-
-        #itemGrid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-        }
-
-        .cart-badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background: #EF4444;
-            color: white;
-            font-size: 10px;
-            padding: 2px 6px;
-            border-radius: 50%;
-            font-weight: 800;
-        }
-
+        #itemGrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .cart-badge { position: absolute; top: -5px; right: -5px; background: #EF4444; color: white; font-size: 10px; padding: 2px 6px; border-radius: 50%; font-weight: 800; }
         @media print { .no-print { display: none !important; } }
     </style>
 </head>
@@ -70,47 +33,39 @@
                 <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">TOKO AMALIA</h1>
                 <p class="text-slate-500 text-sm mt-2 font-medium">Point of Sale System</p>
             </div>
-
             <div class="space-y-4">
                 <div class="relative">
                     <i class="fas fa-user absolute left-4 top-4 text-slate-400"></i>
                     <input type="text" id="loginName" placeholder="Nama Kasir" class="w-full pl-12 p-4 bg-slate-100 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none font-semibold text-slate-700">
                 </div>
-                <button onclick="login('kasir')" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 btn-touch">MASUK SEBAGAI KASIR</button>
-                
+                <button onclick="handleLogin('kasir')" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-indigo-200 btn-touch">MASUK SEBAGAI KASIR</button>
                 <div class="relative py-4 flex items-center">
                     <div class="flex-grow border-t border-slate-200"></div>
                     <span class="flex-shrink mx-4 text-slate-400 text-xs font-bold uppercase tracking-widest">Admin</span>
                     <div class="flex-grow border-t border-slate-200"></div>
                 </div>
-
                 <div class="relative">
                     <i class="fas fa-lock absolute left-4 top-4 text-slate-400"></i>
                     <input type="password" id="loginPass" placeholder="Password Admin" class="w-full pl-12 p-4 bg-slate-100 border-none rounded-2xl focus:ring-2 focus:ring-indigo-500 outline-none font-semibold text-slate-700">
                 </div>
-                <button onclick="login('admin')" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold btn-touch uppercase text-sm tracking-wider">Akses Gudang</button>
+                <button onclick="handleLogin('admin')" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-bold btn-touch uppercase text-sm tracking-wider">Akses Gudang</button>
             </div>
         </div>
     </div>
 
     <header class="bg-white/80 backdrop-blur-md px-5 py-4 sticky top-0 z-40 flex justify-between items-center no-print">
         <div>
-            <h2 id="userNameDisplay" class="text-lg font-extrabold text-slate-900 leading-tight">Halo, Admin</h2>
+            <h2 id="userNameDisplay" class="text-lg font-extrabold text-slate-900 leading-tight">Halo...</h2>
             <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Toko Amalia POS</p>
         </div>
-        <button onclick="location.reload(true)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500">
-            <i class="fas fa-sign-out-alt"></i>
-        </button>
+        <button onclick="location.reload(true)" class="w-10 h-10 flex items-center justify-center rounded-xl bg-red-50 text-red-500"><i class="fas fa-sign-out-alt"></i></button>
     </header>
 
     <main class="p-4 pb-32 no-print max-w-xl mx-auto">
-        
         <section id="sectionKasir">
-            <div class="flex gap-3 mb-6">
-                <div class="relative flex-1">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="searchBarang" onkeyup="renderKasirItems()" placeholder="Cari barang belanjaan..." class="w-full pl-11 p-4 bg-white border-none rounded-2xl shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none font-medium text-slate-700">
-                </div>
+            <div class="relative mb-6">
+                <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                <input type="text" id="searchBarang" onkeyup="renderKasirItems()" placeholder="Cari barang..." class="w-full pl-11 p-4 bg-white border-none rounded-2xl shadow-sm outline-none">
             </div>
             <div id="itemGrid"></div>
         </section>
@@ -121,33 +76,32 @@
                 <button id="btnMonthly" onclick="filterLaporan('monthly')" class="flex-1 py-3 rounded-xl font-bold text-xs uppercase text-slate-500">Bulan</button>
                 <button id="btnYearly" onclick="filterLaporan('yearly')" class="flex-1 py-3 rounded-xl font-bold text-xs uppercase text-slate-500">Tahun</button>
             </div>
-            <div class="mb-6" id="filterInputContainer"></div>
-            <div class="bg-indigo-600 rounded-3xl p-6 mb-8 text-white shadow-xl shadow-indigo-100 flex justify-between items-center">
-                <div>
-                    <p class="text-indigo-100 text-xs font-bold uppercase tracking-widest mb-1">Total Pendapatan</p>
-                    <h3 id="totalOmset" class="text-3xl font-black">Rp 0</h3>
-                </div>
-                <div class="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center">
-                    <i class="fas fa-chart-line text-2xl"></i>
-                </div>
+            <div id="filterInputContainer" class="mb-6"></div>
+            <div class="bg-indigo-600 rounded-3xl p-6 mb-8 text-white shadow-xl flex justify-between items-center">
+                <div><p class="text-xs opacity-80 uppercase font-bold tracking-widest">Pendapatan</p><h3 id="totalOmset" class="text-3xl font-black">Rp 0</h3></div>
+                <i class="fas fa-chart-line text-2xl opacity-50"></i>
             </div>
             <div id="historyList" class="space-y-4"></div>
         </section>
 
         <section id="sectionAdmin" class="hidden">
             <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-extrabold text-slate-900">Stok Barang</h3>
-                <button onclick="openModalBarang()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-indigo-100">
-                    <i class="fas fa-plus mr-2"></i>BARANG BARU
-                </button>
+                <h3 class="text-xl font-extrabold">Stok Barang</h3>
+                <button onclick="openModalBarang()" class="bg-indigo-600 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-lg">BARANG BARU</button>
             </div>
-            <input type="text" id="searchGudang" onkeyup="renderAdminTable()" placeholder="Cari di gudang..." class="w-full p-4 bg-white border-none rounded-2xl shadow-sm mb-4 outline-none font-medium">
+            <input type="text" id="searchGudang" onkeyup="renderAdminTable()" placeholder="Cari di gudang..." class="w-full p-4 bg-white border-none rounded-2xl shadow-sm mb-4 outline-none">
             <div id="adminTableBody" class="space-y-3"></div>
         </section>
     </main>
 
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-8 py-3 flex justify-between items-center z-50 nav-shadow no-print">
+        <button onclick="showSection('Kasir')" id="navKasir" class="flex flex-col items-center gap-1 active-nav-item"><i class="fas fa-th-large text-xl"></i><span class="text-[10px] font-bold uppercase">Kasir</span></button>
+        <button onclick="showSection('History')" id="navHistory" class="flex flex-col items-center gap-1 text-slate-400"><i class="fas fa-receipt text-xl"></i><span class="text-[10px] font-bold uppercase">Laporan</span></button>
+        <button onclick="showSection('Admin')" id="adminNavBtn" class="flex flex-col items-center gap-1 text-slate-400 hidden"><i class="fas fa-box text-xl"></i><span class="text-[10px] font-bold uppercase">Gudang</span></button>
+    </nav>
+
     <div id="floatingCartBtn" onclick="toggleCart()" class="fixed bottom-24 right-6 z-40 no-print">
-        <div class="relative bg-indigo-600 w-16 h-16 rounded-full flex items-center justify-center text-white shadow-2xl animate-bounce">
+        <div class="relative bg-indigo-600 w-16 h-16 rounded-full flex items-center justify-center text-white shadow-2xl">
             <i class="fas fa-shopping-basket text-2xl"></i>
             <span id="cartCount" class="cart-badge">0</span>
         </div>
@@ -157,27 +111,24 @@
         <div class="absolute bottom-0 left-0 right-0 bg-white rounded-t-[2.5rem] max-h-[90vh] flex flex-col overflow-hidden">
             <div class="w-12 h-1.5 bg-slate-200 rounded-full mx-auto mt-4 mb-2"></div>
             <div class="p-6 flex justify-between items-center">
-                <h3 class="font-extrabold text-xl">Keranjang Belanja</h3>
-                <button onclick="resetCart()" class="text-red-500 font-bold text-xs uppercase">Hapus Semua</button>
+                <h3 class="font-extrabold text-xl">Keranjang</h3>
+                <button onclick="resetCart()" class="text-red-500 font-bold text-xs">HAPUS SEMUA</button>
             </div>
-            <div id="cartList" class="flex-1 overflow-y-auto px-6 space-y-4 min-h-[100px]"></div>
-            <div class="p-6 bg-slate-50 border-t border-slate-100">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-slate-500 font-bold">Total Pembayaran</span>
-                    <span id="totalHarga" class="text-2xl font-black text-indigo-600">Rp 0</span>
-                </div>
+            <div id="cartList" class="flex-1 overflow-y-auto px-6 space-y-4"></div>
+            <div class="p-6 bg-slate-50 border-t">
+                <div class="flex justify-between items-center mb-4"><span class="text-slate-500 font-bold">Total</span><span id="totalHarga" class="text-2xl font-black text-indigo-600">Rp 0</span></div>
                 <div class="grid grid-cols-2 gap-3 mb-4">
-                    <div class="bg-white p-3 rounded-2xl border border-slate-200">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase">Uang Bayar</p>
+                    <div class="bg-white p-3 rounded-2xl border">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase">Bayar</p>
                         <input type="number" id="inputBayar" oninput="hitungKembalian()" class="w-full text-lg font-black outline-none bg-transparent" placeholder="0">
                     </div>
-                    <div class="bg-emerald-50 p-3 rounded-2xl border border-emerald-100">
-                        <p class="text-[10px] font-bold text-emerald-400 uppercase">Kembalian</p>
+                    <div class="bg-emerald-50 p-3 rounded-2xl border-emerald-100">
+                        <p class="text-[10px] font-bold text-emerald-400 uppercase">Kembali</p>
                         <div id="textKembalian" class="text-lg font-black text-emerald-600">Rp 0</div>
                     </div>
                 </div>
-                <button onclick="prosesTransaksi()" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-lg shadow-xl btn-touch">BAYAR & CETAK STRUK</button>
-                <button onclick="toggleCart()" class="w-full text-slate-400 font-bold py-4 text-sm uppercase">Tutup</button>
+                <button onclick="prosesTransaksi()" class="w-full bg-indigo-600 text-white py-5 rounded-2xl font-black text-lg btn-touch">PROSES BAYAR</button>
+                <button onclick="toggleCart()" class="w-full text-slate-400 font-bold py-4 text-sm">TUTUP</button>
             </div>
         </div>
     </div>
@@ -187,72 +138,42 @@
             <h3 class="text-center font-black text-lg mb-2 uppercase" id="addStokTitle">Tambah Stok</h3>
             <p id="addStokCurrent" class="text-center text-xs font-bold text-slate-400 mb-6"></p>
             <input type="hidden" id="addStokKey">
-            <input type="number" id="inputTambahStok" class="w-full text-center text-3xl font-black p-4 bg-slate-100 rounded-2xl outline-none focus:ring-2 focus:ring-indigo-500 mb-6" placeholder="0">
+            <input type="number" id="inputTambahStok" class="w-full text-center text-3xl font-black p-4 bg-slate-100 rounded-2xl outline-none mb-6" placeholder="0">
             <div class="grid grid-cols-2 gap-3">
                 <button onclick="closeModalAddStok()" class="py-4 bg-slate-100 text-slate-500 font-bold rounded-2xl">BATAL</button>
-                <button onclick="saveAddedStok()" class="py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg shadow-indigo-100">SIMPAN</button>
+                <button onclick="saveAddedStok()" class="py-4 bg-indigo-600 text-white font-black rounded-2xl">SIMPAN</button>
             </div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-100 px-8 py-3 flex justify-between items-center z-50 nav-shadow no-print">
-        <button onclick="showSection('Kasir')" id="navKasir" class="flex flex-col items-center gap-1 active-nav-item">
-            <i class="fas fa-th-large text-xl"></i>
-            <span class="text-[10px] font-bold uppercase tracking-tighter">Kasir</span>
-        </button>
-        <button onclick="showSection('History')" id="navHistory" class="flex flex-col items-center gap-1 text-slate-400">
-            <i class="fas fa-receipt text-xl"></i>
-            <span class="text-[10px] font-bold uppercase tracking-tighter">Laporan</span>
-        </button>
-        <button onclick="showSection('Admin')" id="adminNavBtn" class="flex flex-col items-center gap-1 text-slate-400 hidden">
-            <i class="fas fa-box text-xl"></i>
-            <span class="text-[10px] font-bold uppercase tracking-tighter">Gudang</span>
-        </button>
-    </nav>
-
-    <div id="modalBarang" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4 hidden">
-        <div class="bg-white w-full max-w-md rounded-t-[2.5rem] sm:rounded-[2.5rem] p-8 shadow-2xl">
+    <div id="modalBarang" class="fixed inset-0 z-[60] bg-black/50 backdrop-blur-sm flex items-end justify-center hidden">
+        <div class="bg-white w-full max-w-md rounded-t-[2.5rem] p-8">
             <h3 class="text-xl font-extrabold mb-6" id="modalTitle">Tambah Barang</h3>
             <div class="space-y-4">
                 <input type="hidden" id="editKey">
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Nama Produk</label>
-                    <input type="text" id="formNama" class="w-full p-4 bg-slate-100 rounded-2xl font-bold uppercase outline-none">
-                </div>
+                <input type="text" id="formNama" placeholder="NAMA PRODUK" class="w-full p-4 bg-slate-100 rounded-2xl font-bold uppercase outline-none">
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Harga Pcs</label>
-                        <input type="number" id="formHargaPcs" class="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none text-indigo-600">
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Harga Box</label>
-                        <input type="number" id="formHargaBox" class="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none text-emerald-600">
-                    </div>
+                    <input type="number" id="formHargaPcs" placeholder="HARGA PCS" class="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none">
+                    <input type="number" id="formHargaBox" placeholder="HARGA BOX" class="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none">
                 </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-2">Stok Awal</label>
-                    <input type="number" id="formStok" class="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none">
-                </div>
-                <button onclick="saveBarang()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase shadow-lg shadow-indigo-100 mt-4">Simpan Data</button>
-                <button onclick="closeModalBarang()" class="w-full text-slate-400 font-bold py-2 text-sm uppercase">Batal</button>
+                <input type="number" id="formStok" placeholder="STOK AWAL" class="w-full p-4 bg-slate-100 rounded-2xl font-bold outline-none">
+                <button onclick="saveBarang()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black uppercase mt-4">SIMPAN</button>
+                <button onclick="closeModalBarang()" class="w-full text-slate-400 font-bold py-2 text-sm uppercase">BATAL</button>
             </div>
         </div>
     </div>
 
-    <div id="modalSelesai" class="fixed inset-0 z-[60] bg-indigo-900/90 backdrop-blur-md flex items-center justify-center p-6 hidden">
-        <div class="bg-white w-full max-w-xs rounded-[3rem] p-8 text-center shadow-2xl">
-            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <i class="fas fa-check text-4xl"></i>
-            </div>
-            <h3 class="text-2xl font-black mb-2">Berhasil!</h3>
-            <p class="text-slate-500 text-sm mb-8 font-medium">Transaksi telah disimpan.</p>
-            <button onclick="printFromLastTrx()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black mb-3 shadow-lg shadow-indigo-200">CETAK STRUK</button>
+    <div id="modalSelesai" class="fixed inset-0 z-[60] bg-indigo-900/90 flex items-center justify-center p-6 hidden">
+        <div class="bg-white w-full max-w-xs rounded-[3rem] p-8 text-center">
+            <div class="w-20 h-20 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6"><i class="fas fa-check text-4xl"></i></div>
+            <h3 class="text-2xl font-black mb-2">Sukses!</h3>
+            <button onclick="printFromLastTrx()" class="w-full bg-indigo-600 text-white py-4 rounded-2xl font-black mb-3">CETAK STRUK</button>
             <button onclick="closeModalSelesai()" class="w-full bg-slate-100 text-slate-600 py-4 rounded-2xl font-bold">KEMBALI</button>
         </div>
     </div>
 
     <script>
-        // --- FIREBASE CONFIG ---
+        // FIREBASE
         const firebaseConfig = {
             apiKey: "AIzaSyBhrN6vuBzuxwFgPI-iXJky6ErDz8auclY",
             authDomain: "toko4malia.firebaseapp.com",
@@ -264,19 +185,21 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        
         let currentUser, masterBarang = {}, keranjang = [], lastTrx = null, currentFilterMode = 'daily';
 
-        // --- AUTH ---
-        function login(role) {
+        // LOGIN FUNCTION (Perbaikan Disini)
+        function handleLogin(role) {
             if (role === 'admin') {
-                if (document.getElementById('loginPass').value === 'admin123') { 
+                const pass = document.getElementById('loginPass').value;
+                if (pass === 'admin123') { 
                     currentUser = { name: 'Administrator', role: 'admin' }; 
                     document.getElementById('adminNavBtn').classList.remove('hidden'); 
-                } else return alert('Password Admin Salah!');
+                } else { alert('Password Admin Salah!'); return; }
             } else {
-                const n = document.getElementById('loginName').value;
-                if (!n) return alert('Masukkan Nama Kasir!');
-                currentUser = { name: n, role: 'kasir' };
+                const name = document.getElementById('loginName').value;
+                if (!name) { alert('Masukkan Nama Kasir!'); return; }
+                currentUser = { name: name, role: 'kasir' };
             }
             document.getElementById('loginPage').classList.add('hidden');
             document.getElementById('userNameDisplay').innerText = 'Halo, ' + currentUser.name;
@@ -292,7 +215,7 @@
             filterLaporan('daily');
         }
 
-        // --- KASIR ---
+        // RENDER KASIR
         function renderKasirItems() {
             const grid = document.getElementById('itemGrid');
             const search = document.getElementById('searchBarang').value.toLowerCase();
@@ -302,7 +225,7 @@
                 if (itm.nama.toLowerCase().includes(search)) {
                     let sClass = itm.stok <= 0 ? "text-red-500 bg-red-50" : (itm.stok < 10 ? "text-amber-500 bg-amber-50" : "text-emerald-500 bg-emerald-50");
                     grid.innerHTML += `
-                    <div onclick="addToCart('${key}')" class="bg-white p-4 rounded-3xl shadow-sm border border-transparent active:border-indigo-200 transition-all btn-touch relative overflow-hidden">
+                    <div onclick="addToCart('${key}')" class="bg-white p-4 rounded-3xl shadow-sm btn-touch relative overflow-hidden border border-slate-50">
                         <div class="mb-3">
                             <h4 class="font-extrabold text-slate-800 text-sm uppercase truncate leading-tight">${itm.nama}</h4>
                             <p class="text-indigo-600 font-black text-lg mt-1">Rp ${itm.hargaPcs.toLocaleString()}</p>
@@ -325,8 +248,6 @@
             updateCartUI();
         }
 
-        function toggleCart() { document.getElementById('cartSheet').classList.toggle('hidden'); }
-
         function updateCartUI() {
             const list = document.getElementById('cartList');
             let total = 0; 
@@ -338,18 +259,15 @@
                 list.innerHTML += `
                 <div class="bg-slate-50 p-4 rounded-2xl flex flex-col gap-3">
                     <div class="flex justify-between items-start">
-                        <div class="flex-1">
-                            <p class="font-black text-sm uppercase text-slate-800">${itm.nama}</p>
-                            <p class="text-[11px] font-bold text-slate-400">@ Rp ${price.toLocaleString()}</p>
-                        </div>
-                        <button onclick="removeItem(${idx})" class="text-slate-300 hover:text-red-500 transition"><i class="fas fa-trash-alt"></i></button>
+                        <div class="flex-1"><p class="font-black text-sm uppercase text-slate-800">${itm.nama}</p><p class="text-[11px] font-bold text-slate-400">@ Rp ${price.toLocaleString()}</p></div>
+                        <button onclick="removeItem(${idx})" class="text-slate-300"><i class="fas fa-trash-alt"></i></button>
                     </div>
                     <div class="flex justify-between items-center">
-                        <div class="flex bg-white p-1 rounded-xl border border-slate-200">
+                        <div class="flex bg-white p-1 rounded-xl border">
                             <button onclick="changeMode(${idx},'pcs')" class="text-[10px] px-3 py-1.5 rounded-lg font-bold ${isPcs ? 'bg-indigo-600 text-white' : 'text-slate-400'}">PCS</button>
                             <button onclick="changeMode(${idx},'box')" class="text-[10px] px-3 py-1.5 rounded-lg font-bold ${!isPcs ? 'bg-emerald-600 text-white' : 'text-slate-400'}">BOX</button>
                         </div>
-                        <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-xl border border-slate-200">
+                        <div class="flex items-center gap-3 bg-white px-3 py-1.5 rounded-xl border">
                             <button onclick="updateQty(${idx},-1)" class="text-indigo-600 font-black"><i class="fas fa-minus"></i></button>
                             <span class="font-black text-sm w-4 text-center">${itm.qty}</span>
                             <button onclick="updateQty(${idx},1)" class="text-indigo-600 font-black"><i class="fas fa-plus"></i></button>
@@ -395,7 +313,7 @@
             } catch (e) { alert('Terjadi Kesalahan!'); }
         }
 
-        // --- GUDANG ---
+        // RENDER GUDANG
         function renderAdminTable() {
             const container = document.getElementById('adminTableBody');
             const search = document.getElementById('searchGudang').value.toLowerCase();
@@ -405,23 +323,20 @@
                 if (itm.nama.toLowerCase().includes(search)) {
                     let sColor = itm.stok <= 0 ? "text-red-500" : (itm.stok < 10 ? "text-amber-500" : "text-emerald-500");
                     container.innerHTML += `
-                    <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100 flex justify-between items-center">
+                    <div class="bg-white p-5 rounded-3xl shadow-sm flex justify-between items-center border border-slate-50">
                         <div class="flex-1">
                             <h4 class="font-black text-slate-800 uppercase text-sm">${itm.nama}</h4>
-                            <div class="flex gap-3 mt-1 text-[10px] font-bold">
+                            <div class="flex gap-3 text-[10px] font-bold">
                                 <span class="text-indigo-500">PCS: ${itm.hargaPcs.toLocaleString()}</span>
                                 <span class="text-emerald-500">BOX: ${itm.hargaBox.toLocaleString()}</span>
                             </div>
                         </div>
                         <div class="flex items-center gap-3">
-                            <div class="text-right mr-2">
-                                <p class="text-[9px] font-bold text-slate-400 uppercase leading-none">Stok</p>
-                                <p class="text-xl font-black ${sColor}">${itm.stok}</p>
-                            </div>
+                            <div class="text-right mr-2"><p class="text-[9px] font-bold text-slate-400 uppercase">Stok</p><p class="text-xl font-black ${sColor}">${itm.stok}</p></div>
                             <div class="flex gap-1.5">
-                                <button onclick="openAddStok('${key}')" class="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center btn-touch shadow-lg shadow-indigo-100"><i class="fas fa-plus"></i></button>
-                                <button onclick="editBarang('${key}')" class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center btn-touch"><i class="fas fa-edit"></i></button>
-                                <button onclick="deleteBarang('${key}')" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center btn-touch"><i class="fas fa-trash-alt"></i></button>
+                                <button onclick="openAddStok('${key}')" class="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center"><i class="fas fa-plus"></i></button>
+                                <button onclick="editBarang('${key}')" class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center"><i class="fas fa-edit"></i></button>
+                                <button onclick="deleteBarang('${key}')" class="w-10 h-10 bg-red-50 text-red-500 rounded-xl flex items-center justify-center"><i class="fas fa-trash-alt"></i></button>
                             </div>
                         </div>
                     </div>`;
@@ -429,7 +344,6 @@
             });
         }
 
-        // FEATURE: QUICK ADD STOK
         function openAddStok(key) {
             const itm = masterBarang[key];
             document.getElementById('addStokKey').value = key;
@@ -437,21 +351,14 @@
             document.getElementById('addStokCurrent').innerText = 'Stok saat ini: ' + itm.stok;
             document.getElementById('inputTambahStok').value = '';
             document.getElementById('modalAddStok').classList.remove('hidden');
-            setTimeout(() => document.getElementById('inputTambahStok').focus(), 300);
         }
-
         function closeModalAddStok() { document.getElementById('modalAddStok').classList.add('hidden'); }
-
         async function saveAddedStok() {
             const key = document.getElementById('addStokKey').value;
-            const addVal = parseInt(document.getElementById('inputTambahStok').value) || 0;
-            if(addVal <= 0) return alert('Masukkan jumlah yang valid!');
-            
-            const newTotal = masterBarang[key].stok + addVal;
-            try {
-                await db.ref('barang/' + key).update({ stok: newTotal });
-                closeModalAddStok();
-            } catch(e) { alert('Gagal menambah stok'); }
+            const val = parseInt(document.getElementById('inputTambahStok').value) || 0;
+            if(val <= 0) return alert('Jumlah tidak valid');
+            await db.ref('barang/' + key).update({ stok: masterBarang[key].stok + val });
+            closeModalAddStok();
         }
 
         function saveBarang() {
@@ -478,37 +385,34 @@
             document.getElementById('modalBarang').classList.remove('hidden'); 
         }
 
-        function deleteBarang(k) { if(confirm('Hapus item ini?')) db.ref('barang/'+k).remove(); }
+        function deleteBarang(k) { if(confirm('Hapus?')) db.ref('barang/'+k).remove(); }
         function openModalBarang() { 
-            document.getElementById('modalTitle').innerText = 'Tambah Barang Baru'; 
+            document.getElementById('modalTitle').innerText = 'Barang Baru'; 
             document.getElementById('modalBarang').classList.remove('hidden'); 
-            document.getElementById('editKey').value = ''; 
-            document.getElementById('formNama').value = ''; 
-            document.getElementById('formHargaPcs').value = ''; 
-            document.getElementById('formHargaBox').value = ''; 
+            document.getElementById('editKey').value = ''; document.getElementById('formNama').value = ''; 
+            document.getElementById('formHargaPcs').value = ''; document.getElementById('formHargaBox').value = ''; 
             document.getElementById('formStok').value = ''; 
         }
         function closeModalBarang() { document.getElementById('modalBarang').classList.add('hidden'); }
 
-        // --- LAPORAN ---
+        // LAPORAN
         function filterLaporan(mode) {
             currentFilterMode = mode;
             const container = document.getElementById('filterInputContainer');
             const now = new Date();
             document.querySelectorAll('#sectionHistory button[id^="btn"]').forEach(b => {
-                b.classList.remove('bg-indigo-600', 'text-white');
-                b.classList.add('text-slate-500');
+                b.classList.remove('bg-indigo-600', 'text-white'); b.classList.add('text-slate-500');
             });
             if(mode === 'daily') {
-                container.innerHTML = `<input type="date" id="filterDate" onchange="applyFilter()" class="w-full bg-white p-4 rounded-2xl border-none shadow-sm font-bold text-sm outline-none">`;
+                container.innerHTML = `<input type="date" id="filterDate" onchange="applyFilter()" class="w-full bg-white p-4 rounded-2xl outline-none shadow-sm font-bold">`;
                 document.getElementById('filterDate').value = now.toLocaleDateString('en-CA');
                 document.getElementById('btnDaily').classList.add('bg-indigo-600', 'text-white');
             } else if(mode === 'monthly') {
-                container.innerHTML = `<input type="month" id="filterMonth" onchange="applyFilter()" class="w-full bg-white p-4 rounded-2xl border-none shadow-sm font-bold text-sm outline-none">`;
+                container.innerHTML = `<input type="month" id="filterMonth" onchange="applyFilter()" class="w-full bg-white p-4 rounded-2xl outline-none shadow-sm font-bold">`;
                 document.getElementById('filterMonth').value = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0');
                 document.getElementById('btnMonthly').classList.add('bg-indigo-600', 'text-white');
             } else if(mode === 'yearly') {
-                container.innerHTML = `<select id="filterYear" onchange="applyFilter()" class="w-full bg-white p-4 rounded-2xl border-none shadow-sm font-bold text-sm outline-none"><option value="${now.getFullYear()}">${now.getFullYear()}</option><option value="${now.getFullYear()-1}">${now.getFullYear()-1}</option></select>`;
+                container.innerHTML = `<select id="filterYear" onchange="applyFilter()" class="w-full bg-white p-4 rounded-2xl outline-none shadow-sm font-bold"><option value="${now.getFullYear()}">${now.getFullYear()}</option><option value="${now.getFullYear()-1}">${now.getFullYear()-1}</option></select>`;
                 document.getElementById('btnYearly').classList.add('bg-indigo-600', 'text-white');
             }
             applyFilter();
@@ -531,18 +435,15 @@
                     if(match) {
                         totalOmset += tr.total;
                         list.innerHTML += `
-                        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-100">
+                        <div class="bg-white p-5 rounded-3xl shadow-sm border border-slate-50">
                             <div class="flex justify-between items-start mb-4">
-                                <div><span class="text-[10px] font-black text-indigo-600 uppercase bg-indigo-50 px-2 py-1 rounded-lg">${tr.kasir}</span><p class="text-[10px] text-slate-400 mt-1.5 font-bold"><i class="far fa-clock mr-1"></i> ${new Date(tr.timestamp).toLocaleString('id-ID')}</p></div>
-                                <button onclick='reprint("${id}")' class="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center btn-touch"><i class="fas fa-print"></i></button>
+                                <div><span class="text-[10px] font-black text-indigo-600 bg-indigo-50 px-2 py-1 rounded-lg uppercase">${tr.kasir}</span><p class="text-[10px] text-slate-400 mt-1 font-bold">${new Date(tr.timestamp).toLocaleString('id-ID')}</p></div>
+                                <button onclick='reprint("${id}")' class="w-10 h-10 bg-slate-50 text-slate-400 rounded-xl flex items-center justify-center"><i class="fas fa-print"></i></button>
                             </div>
-                            <div class="space-y-2 border-t border-dashed border-slate-100 pt-4">
+                            <div class="space-y-1 border-t border-dashed pt-3">
                                 ${tr.items.map(i => `<div class="flex justify-between text-xs font-bold text-slate-600"><span>${i.nama} (x${i.qty})</span><span>${((i.mode === 'pcs' ? i.hargaPcs : i.hargaBox) * i.qty).toLocaleString()}</span></div>`).join('')}
                             </div>
-                            <div class="flex justify-between items-center mt-4 pt-4 border-t border-slate-50">
-                                <span class="text-xs font-black text-slate-400 uppercase">Total</span>
-                                <span class="text-lg font-black text-slate-900">Rp ${tr.total.toLocaleString()}</span>
-                            </div>
+                            <div class="flex justify-between mt-3 pt-3 border-t"><span class="text-xs font-black text-slate-400 uppercase">Total</span><span class="text-lg font-black text-slate-900">Rp ${tr.total.toLocaleString()}</span></div>
                         </div>`;
                     }
                 });
@@ -550,14 +451,30 @@
             });
         }
 
-        // --- PRINTER & UTILS ---
+        // UTILS
+        function toggleCart() { document.getElementById('cartSheet').classList.toggle('hidden'); }
         function reprint(id) { db.ref('transaksi/' + id).once('value', snap => { printReceipt(snap.val()); }); }
-        
         function printReceipt(trx) {
-            if(!trx) return;
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            document.body.appendChild(iframe);
+            const iframe = document.createElement('iframe'); iframe.style.display = 'none'; document.body.appendChild(iframe);
             const doc = iframe.contentWindow.document;
-            const itemsHtml = trx.items.map(i => `<div style="display:flex;justify-content:space-between;margin-bottom:2px;"><span>${i.nama} (x${i.qty})</span><span>${((i.mode === 'pcs' ? i.hargaPcs : i.hargaBox) * i.qty).toLocaleString()}</span></div>`).join('');
-            doc.write(`<html><head><style
+            const itemsHtml = trx.items.map(i => `<div style="display:flex;justify-content:space-between"><span>${i.nama} (x${i.qty})</span><span>${((i.mode === 'pcs' ? i.hargaPcs : i.hargaBox) * i.qty).toLocaleString()}</span></div>`).join('');
+            doc.write(`<html><body style="width:48mm;font-family:monospace;font-size:10px;"><center><strong>TOKO AMALIA</strong><br>${new Date(trx.timestamp).toLocaleString()}</center><hr>${itemsHtml}<hr>TOTAL: ${trx.total.toLocaleString()}<br>BAYAR: ${trx.bayar.toLocaleString()}<br>KEMBALI: ${trx.kembali.toLocaleString()}<br><center>Kasir: ${trx.kasir}<br>Terima Kasih</center></body></html>`);
+            doc.close(); iframe.onload = () => { iframe.contentWindow.print(); setTimeout(() => document.body.removeChild(iframe), 500); };
+        }
+        function printFromLastTrx() { printReceipt(lastTrx); closeModalSelesai(); }
+        function closeModalSelesai() { document.getElementById('modalSelesai').classList.add('hidden'); keranjang = []; updateCartUI(); }
+        function resetCart() { if(confirm('Reset?')) { keranjang = []; updateCartUI(); } }
+        function showSection(name) {
+            ['sectionKasir','sectionHistory','sectionAdmin'].forEach(s => document.getElementById(s).classList.add('hidden'));
+            ['navKasir','navHistory','adminNavBtn'].forEach(n => {
+                const b = document.getElementById(n);
+                if(b) { b.classList.remove('active-nav-item'); b.classList.add('text-slate-400'); }
+            });
+            document.getElementById('section' + name).classList.remove('hidden');
+            const activeBtn = document.getElementById(name === 'Admin' ? 'adminNavBtn' : 'nav' + name);
+            if(activeBtn) { activeBtn.classList.add('active-nav-item'); activeBtn.classList.remove('text-slate-400'); }
+            document.getElementById('floatingCartBtn').classList.toggle('hidden', name !== 'Kasir');
+        }
+    </script>
+</body>
+</html>
